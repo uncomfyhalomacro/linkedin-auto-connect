@@ -38,6 +38,7 @@ As you work, make small, logical commits. This makes your changes easier to revi
 * **Write Tests**: Ensure your changes are covered by tests.
 * **Commit Often**: Don't wait until the end to make one giant commit.
 * **Follow the Style**: Make sure to follow our commit message style guide below.
+* **Sign Your Commits**: All commits **must be GPG signed** to verify their integrity. This ensures that the commit genuinely comes from you. Please follow [GitHub's guide on signing commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits). You can configure Git to sign all commits automatically with `git config --global commit.gpgsign true`.
 
 ### 4. Submit a Pull Request (PR)
 Once your feature is complete and tested:
