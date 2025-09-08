@@ -1,4 +1,4 @@
-# Contributing to [Project Name] 🧑‍💻
+# Contributing to LinkedIn Auto
 
 Welcome, team! This document outlines the development workflow and best practices to follow when contributing to this project. Following these guidelines helps us maintain a high-quality, clean, and easily maintainable codebase.
 
