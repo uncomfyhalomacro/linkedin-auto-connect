@@ -72,7 +72,7 @@ Once the PR has been approved, it can be merged.
 ## Style Guides
 
 ### Code Style
-We use **Biome** to enforce a consistent code style across the entire project. Please configure your code editor to format on save. A pre-commit hook is also in place to automatically check and format your code before you commit.
+We use [**Biome**](https://www.conventionalcommits.org/en/v1.0.0/#specification) to enforce a consistent code style across the entire project. Please configure your code editor to format on save. A pre-commit hook is also in place to automatically check and format your code before you commit.
 
 ### Commit Message Style
 We follow the [**Conventional Commits**](https://www.conventionalcommits.org/en/v1.0.0/#specification) specification. This creates a more readable commit history and helps automate release notes. Each commit message should have the following structure:
