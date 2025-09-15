@@ -39,5 +39,14 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["src", "src/index.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "tests-examples",
+    "e2e",
+    "playwright.config.ts"
+  ]
 }
