@@ -35,5 +35,6 @@ This should give you an output similar to
 ✅ Invite sent to LinkedIn Profile.
 ```
 
+Of course, this fails if the user has set their profile private or is already a connection.
 
 
