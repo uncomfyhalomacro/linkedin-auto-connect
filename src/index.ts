@@ -1,11 +1,8 @@
 // Usage: node linkedin-invite.js "<profile_url>" <storage_state.json> [--headed]
-const { chromium } = require('playwright');
+import { chromium } from 'playwright';
 import { type Locator } from 'playwright';
 
 function escRe(s: string) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-interface ClickFirstVisibleOptions {
-	locs: Locator[];
-}
 
 async function clickFirstVisible(locs: Locator[]): Promise<boolean> {
 	for (const l of locs) { 
@@ -85,7 +82,10 @@ async function sendInvite(url: string, storagePath: string, opts: { headed?: boo
       }
 
       // Debug: print accessible names of header buttons
-      const acc = await page.accessibility.snapshot({ root: await page.$('main'), interestingOnly: true }).catch(() => null);
+      const mainEl = await page.$('main');
+      const acc = mainEl
+        ? await page.accessibility.snapshot({ root: mainEl, interestingOnly: true }).catch(() => null)
+        : null;
       const btnNames = [];
       (function walk(n) {
         if (!n) return;
