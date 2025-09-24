@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {},
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@axe-core/playwright": "^4.10.2",
     "csv": "^6.4.1",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
