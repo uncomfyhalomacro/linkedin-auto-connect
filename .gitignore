@@ -149,5 +149,5 @@ dist
 /blob-report/
 /playwright/.cache/
 
-/storage_state.json
+/*/**/storage_state.json
 /debug-header.png
