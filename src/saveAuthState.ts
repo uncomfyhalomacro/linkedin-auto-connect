@@ -3,7 +3,10 @@ import * as path from "node:path";
 import { chromium } from "playwright";
 
 // Define the path for the authentication file
-const authFile = path.join(path.dirname(new URL(import.meta.url).pathname), "storage_state.json");
+const authFile = path.join(
+	path.dirname(new URL(import.meta.url).pathname),
+	"storage_state.json",
+);
 
 async function saveState() {
 	// Launch the browser in non-headless mode

@@ -1,28 +1,28 @@
 {
-  "name": "linkedin-auto",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@biomejs/biome": "2.2.3",
-    "@playwright/test": "^1.55.0",
-    "@types/node": "^24.3.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
-  },
-  "dependencies": {
-    "@axe-core/playwright": "^4.10.2",
-    "csv": "^6.4.1",
-    "dotenv": "^17.2.2",
-    "express": "^5.1.0",
-    "graphql": "^16.11.0",
-    "mongodb": "^6.19.0",
-    "node-cron": "^4.2.1",
-    "pg": "^8.16.3"
-  }
+	"name": "linkedin-auto",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@biomejs/biome": "2.2.3",
+		"@playwright/test": "^1.55.0",
+		"@types/node": "^24.3.1",
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.2"
+	},
+	"dependencies": {
+		"@axe-core/playwright": "^4.10.2",
+		"csv": "^6.4.1",
+		"dotenv": "^17.2.2",
+		"express": "^5.1.0",
+		"graphql": "^16.11.0",
+		"mongodb": "^6.19.0",
+		"node-cron": "^4.2.1",
+		"pg": "^8.16.3"
+	}
 }
