@@ -11,3 +11,29 @@ npm install
 npx playwright install --with-deps
 ```
 
+## How to use
+
+1. Save an account's session informatoin to do the auto connection.
+
+```
+node src/runSaveState.ts
+```
+
+This will open a Chromium browser that requires you to login. Input the account's login information.
+
+This should save the file inside `src/storage_state.json`.
+
+2. Run the following command replacing `profileName` with a valid result to a LinkedIn Profile.
+
+```
+node src/index.ts 'https://www.linkedin.com/in/profileName/' src/storage_state.json
+```
+
+This should give you an output similar to
+
+```
+✅ Invite sent to LinkedIn Profile.
+```
+
+
+
