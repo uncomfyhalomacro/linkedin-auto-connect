@@ -18,7 +18,8 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
@@ -40,7 +41,7 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["src", "src/index.ts"],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "dist",
