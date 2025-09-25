@@ -11,6 +11,8 @@ npm install
 npx playwright install --with-deps
 ```
 
+Also do this before you contribute to this repository. See [CONTRIBUTING.md](./docs/CONTRIBUTING.md) on how to contribute.
+
 ## How to use
 
 1. Save an account's session informatoin to do the auto connection.
