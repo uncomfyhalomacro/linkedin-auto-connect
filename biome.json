@@ -7,7 +7,16 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["./!package.json"]
+		"includes": [
+			"**",
+			"!node_modules/",
+			"!dist/",
+			"!coverage/",
+			"!build/",
+			"!.husky/",
+			"!package.json",
+			"!test-results/"
+		]
 	},
 	"formatter": {
 		"enabled": true,
