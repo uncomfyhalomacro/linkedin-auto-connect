@@ -1,5 +1,5 @@
 // findProfileLinks.ts
-import type { BrowserContext, Page } from "playwright";
+import type { Browser, BrowserContext, Page } from "playwright";
 import sendInvite from "./sendInvite.ts";
 
 function sleep(ms: number): Promise<void> {
@@ -7,20 +7,20 @@ function sleep(ms: number): Promise<void> {
 }
 
 async function findAndConnectProfileLinks(
-	_ctx: BrowserContext,
+	url: string,  // already visited url for matching
+	browser: Browser,
+	ctx: BrowserContext,
 	page: Page,
 	storageStatePath: string,
 ) {
 	try {
 		console.log("Page loaded. Searching for profile links...");
 
-		// The selector to find all <a> tags with hrefs that start with "/in/"
-		// AND contain "miniProfileUrn="
-		const profileLinkSelector =
-			'a.yzkQtgmTvfGClJdzuHAtulmhmBSuRQRpw';  // Doubtful about this regex
+		// The selector to find all <a> tags with hrefs
+		const profileLinkSelector = page.getByRole("link")
 
 		// Find all locators matching the selector
-		const linkLocators = await page.locator(profileLinkSelector).all();
+		const linkLocators = await profileLinkSelector.all();
 
 		if (linkLocators.length === 0) {
 			console.log("❌ No matching profile links were found on the page.");
@@ -42,32 +42,41 @@ async function findAndConnectProfileLinks(
 
 		// Print the final list of URLs
 		console.log("--- Extracted URLs ---");
-		const toConnect: Array<Promise<void>> = [];
 		const cleanedUrls: Array<string> = [];
 		urls.forEach((url) => {
 			// Split the `?` part of the URL to avoid duplicate invites
 			const cleanedUrl = url.split("?")[0];
 			cleanedUrls.push(cleanedUrl ?? url);
-		})
+		});
 
 		// Only get unique URLs with this substring "https://www.linkedin.com/in/"
 		const uniqueUrls = Array.from(new Set(cleanedUrls));
 		const filteredUrls = uniqueUrls.filter((url) =>
-			url.startsWith("https://www.linkedin.com/in")
+			url.startsWith("https://www.linkedin.com/in"),
 		);
 
-		filteredUrls.forEach((filteredUrl, index) => {
-			console.log(`${index + 1}: ${filteredUrl}`);
-			toConnect.push(sendInvite(filteredUrl, storageStatePath, { headed: false }));
-		});
+		// Start from the second element to skip own profile
+		console.log(
+			`✅ ${filteredUrls.length} unique profile URLs found. Starting to send invites...`,
+		);
+		// Use a for...of loop to handle async operations sequentially
+		for (const [index, filteredUrl] of filteredUrls.entries()) {
+			try {
+				if (filteredUrl === url) {
+					console.log(`Skipping profile URL: ${filteredUrl}`);
+					continue; // Skip sending invite to profile passed from sendInvite
+				}
+				console.log(`${index + 1}: Processing ${filteredUrl}`);
+				await sendInvite(filteredUrl, storageStatePath, browser, ctx, page);
 
-		for (const connect of toConnect) {
-			await connect;
-			await sleep(3000); // Sleep for 3 seconds between connection requests
+				// Throttle requests to mimic human behavior
+				await sleep(2000 + Math.random() * 3000); // Wait 2-5 seconds
+			} catch (err) {
+				console.error(`❌ Error sending invite to ${filteredUrl}:`, err);
+			}
 		}
 
 		console.log("All connection requests have been processed.");
-
 	} catch (error) {
 		console.error("An error occurred:", error);
 	}
