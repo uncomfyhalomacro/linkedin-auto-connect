@@ -10,7 +10,7 @@
 		"test:headed": "npx playwright test --headed",
 		"test:debug": "npx playwright test --debug",
 		"format": "npx biome format",
-		"format:check": "npx biome format --check",
+		"format:write": "npx biome format --write",
 		"tsc": "tsc --noEmit",
 		"lint": "npx biome check",
 		"start": "ts-node src/index.ts",
