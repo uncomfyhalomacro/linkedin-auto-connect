@@ -1,22 +1,15 @@
-import { chromium } from "playwright";
-import { clickFirstVisible, escRe } from "./common.ts";
+import type { Browser, BrowserContext, Page } from "playwright";
 import checkConnections from "./checkConnections.ts";
+import { clickFirstVisible, escRe } from "./common.ts";
 import findAndConnectProfileLinks from "./findAndConnectProfileLinks.ts";
 
 async function sendInvite(
 	url: string,
 	storagePath: string,
-	opts: { headed?: boolean } = {},
+	browser: Browser,
+	ctx: BrowserContext,
+	page: Page,
 ) {
-	const browser = await chromium.launch({ headless: !opts.headed });
-	const ctx = await browser.newContext({
-		storageState: storagePath,
-		locale: "en-US",
-		extraHTTPHeaders: { "Accept-Language": "en-US,en;q=0.9" },
-	});
-
-	const page = await ctx.newPage();
-
 	// i18n label patterns
 	const CONNECT =
 		/(Connect|Vernetzen|Se connecter|Conectar|Collegati|Conectar-se)/i;
@@ -56,7 +49,7 @@ async function sendInvite(
 					.first();
 				clicked = await clickFirstVisible([
 					overlay.getByRole("menuitem", { name: CONNECT }).first(),
-					overlay.getByRole("button", { name: CONNECT }).first(),
+					overlay.getByRole("button", { name: /Invite/ }).first(),
 					overlay.locator(`:text-matches("${CONNECT.source}")`).first(),
 				]);
 			}
@@ -133,16 +126,19 @@ async function sendInvite(
 		console.log("Checking profile connections...");
 		await page.waitForLoadState("networkidle").catch(() => {});
 
-		await checkConnections(page, ctx);
+		const searchPage = await checkConnections(page, ctx);
 		console.log("✅ Connections checked.");
 		console.log("Sending invitations to connections' profiles...");
 
-		await findAndConnectProfileLinks(ctx, page, storagePath);
+		await findAndConnectProfileLinks(url, browser, ctx, searchPage, storagePath);
 		console.log("✅ Invitations sent to connections' profiles.");
 		console.log("All done!");
-	} finally {
-		await ctx.close();
-		await browser.close();
+	} catch (err) {
+		console.error("❌ Error in sendInvite:", err);
+		await page.screenshot({ path: "error-screenshot.png" }).catch(() => {});
+		console.log(
+			"❌ Screenshot saved as error-screenshot.png for debugging purposes.",
+		);
 	}
 }
 
