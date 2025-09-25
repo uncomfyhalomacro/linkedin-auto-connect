@@ -5,7 +5,21 @@ import type { BrowserContext, Page } from "playwright";
 async function checkConnections(page: Page, ctx: BrowserContext) {
 	try {
 		// This is the action that triggers the navigation
-		await page.click("a.ember-view[href*='/search/results/people/']");
+		await page.click("a.ember-view[href*='/search/results/people/']", {timeout: 7000}).catch((err) => {
+			console.error("❌ Error clicking the link:", err);
+			console.log("Trying to navigate another way...");
+		}).then(async () => {
+			await page.click("a.yzkQtgmTvfGClJdzuHAtulmhmBSuRQRpw[href*='/search/results/people/']").catch((err) => {
+				console.error("❌ Error clicking the first fallback link:", err);
+			});
+		}).finally(async () => {
+			// Fallback navigation if the click fails
+			await page.goto("https://www.linkedin.com/search/results/people/", { waitUntil: "load" }).catch((err) => {
+				console.error("❌ Error with fallback navigation:", err);
+				throw err; // Re-throw to be caught by outer catch
+			});
+			console.log("Navigation action attempted.");
+		});
 
 		// Define the regex to wait for
 		const searchUrlRegex =
