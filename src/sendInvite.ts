@@ -26,7 +26,7 @@ async function sendInvite(
 	const PENDING = /(Pending|Ausstehend|Withdraw)/i;
 
 	try {
-		await page.goto(url, { waitUntil: "domcontentloaded" });
+		await page.goto(url, { waitUntil: "domcontentloaded", timeout: 0 });
 		const h1 = page
 			.getByRole("main")
 			.getByRole("heading", { level: 1 })
@@ -89,7 +89,8 @@ async function sendInvite(
 				.catch(() => false);
 			if (isPending) {
 				console.log("ℹ️ Invitation already pending.");
-				return;
+				maybeAlreadyConnected = true;
+				console.log("Checking profile connections...");
 			}
 
 			// Debug: print accessible names of header buttons
