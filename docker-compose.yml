@@ -1,0 +1,39 @@
+# docker-compose version specification
+version: '3.8'
+
+# Define all the services (containers) your application needs
+services:
+  # The Node.js application service
+  app:
+    image: node:22-alpine # Use the official Node 22 Alpine image
+    build: . # Build the image from the Dockerfile in the current directory
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    environment:
+      # Pass connection details to the Node app
+      - DATABASE_URL=postgres://devuser:devpassword@db:5432/devdb
+    depends_on:
+      - db # Wait for the 'db' service to be healthy before starting 'app'
+    working_dir: /usr/src/app
+    volumes:
+      # Mount the current directory into the container for live code updates
+      - .:/usr/src/app
+      # Don't overwrite the node_modules folder in the container
+      - /usr/src/app/node_modules
+    command: npm install
+
+  # The PostgreSQL database service
+  db:
+    image: postgres:16-alpine # Use the official Postgres 16 Alpine image
+    environment:
+      # These credentials must match what's in the DATABASE_URL above
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=devpassword
+      - POSTGRES_DB=devdb
+    volumes:
+      # Persist database data in a named volume
+      - postgres_data:/var/lib/postgresql/data
+
+# Define the named volume for data persistence
+volumes:
+  postgres_data:
