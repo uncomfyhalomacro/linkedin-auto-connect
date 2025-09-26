@@ -23,12 +23,15 @@ node src/runSaveState.ts
 
 This will open a Chromium browser that requires you to login. Input the account's login information.
 
-This should save the file inside `src/storage_state.json`.
+This should save the file as a `.env` at the project root.
 
 2. Run the following command replacing `profileName` with a valid result to a LinkedIn Profile.
 
+> [!IMPORTANT]
+> Ensure that your `.env` file exists and is generated prior this step.
+
 ```bash
-node src/index.ts 'https://www.linkedin.com/in/profileName/' src/storage_state.json
+node src/index.ts 'https://www.linkedin.com/in/profileName/'
 ```
 
 This should give you an output similar to
@@ -40,6 +43,11 @@ This should give you an output similar to
 Of course, this fails if the user has set their profile private or is already a connection.
 
 # Containerised Solution
+
+> [!NOTE]
+> Work in progress. We still have to
+> 1. Pass the `.env` values over e.g. in CI.
+> 2. Store LinkedIn profiles.
 
 If you want to use and ensure that the project is working universally, you can use `docker` or `podman`. 
 
