@@ -1,12 +1,19 @@
 // saveAuthState.ts
-import * as path from "node:path";
-import { chromium } from "playwright";
 
-// Define the path for the authentication file
-const authFile = path.join(
-	path.dirname(new URL(import.meta.url).pathname),
-	"storage_state.json",
-);
+import { writeFileSync } from "node:fs";
+import * as path from "node:path";
+import { dirname } from "node:path";
+import { chromium } from "playwright";
+import { encryptJson } from "./encryption.ts";
+
+const saveAuthEnv = (key: string, data: string) => {
+	const envFormat = `STORAGE_STATE_SECRET="${data}"
+STORAGE_STATE_KEY="${key}"
+`;
+	const projectRootDir = dirname(process.argv0);
+	const writePath = path.join(projectRootDir, ".env");
+	writeFileSync(writePath, envFormat, "utf-8");
+};
 
 async function saveState() {
 	// Launch the browser in non-headless mode
@@ -28,11 +35,15 @@ async function saveState() {
 	console.log("Login successful! Saving authentication state...");
 
 	// Save the authentication state to the file
-	await context.storageState({ path: authFile });
+	const storageStateObject = await context.storageState();
 
-	console.log(`Authentication state saved to ${authFile}`);
+	const { exportedKey, combined } = await encryptJson(storageStateObject);
+	const exportedKeyStringBase64 = exportedKey.toString("base64");
+	const encryptedStringBase64 = combined.toString("base64");
 
 	await browser.close();
+	console.log("✅ Saving environmental variables to `.env`");
+	saveAuthEnv(exportedKeyStringBase64, encryptedStringBase64);
 }
 
 export default saveState;
