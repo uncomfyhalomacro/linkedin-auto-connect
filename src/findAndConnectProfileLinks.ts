@@ -7,7 +7,7 @@ function sleep(ms: number): Promise<void> {
 }
 
 async function findAndConnectProfileLinks(
-	url: string,  // already visited url for matching
+	url: string, // already visited url for matching
 	browser: Browser,
 	ctx: BrowserContext,
 	page: Page,
@@ -17,7 +17,7 @@ async function findAndConnectProfileLinks(
 		console.log("Page loaded. Searching for profile links...");
 
 		// The selector to find all <a> tags with hrefs
-		const profileLinkSelector = page.getByRole("link")
+		const profileLinkSelector = page.getByRole("link");
 
 		// Find all locators matching the selector
 		const linkLocators = await profileLinkSelector.all();

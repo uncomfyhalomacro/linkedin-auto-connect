@@ -20,10 +20,11 @@ async function checkConnections(page: Page, ctx: BrowserContext) {
 			try {
 				// --- Attempt 2: Find link by text and navigate ---
 				console.log("Fallback 1: Locating link by text...");
-				const connectionsLink = page.getByRole("link", { name: /connections/ });
+				const connectionsLink = page.getByRole("link", { name: /\/connections\// });
 				const connectionURL = await connectionsLink
 					.first()
 					.getAttribute("href");
+				console.log("Connection URL: ", connectionURL)
 
 				if (connectionURL) {
 					const fullUrl = new URL(connectionURL, page.url()).toString();
@@ -64,12 +65,11 @@ async function checkConnections(page: Page, ctx: BrowserContext) {
 		// to confirm the page is loaded before scraping or continuing.
 		await page.waitForSelector("svg.navigational-filter-dropdown__caret-icon", {
 			state: "visible",
-			timeout: 10000,
+			timeout: 0,
 		});
 		console.log("Confirmed page content is visible.");
 		await page.screenshot({ path: "final-page-view.png" }).catch(() => {});
 		// --- Your automation logic ends here ---
-		
 	} catch (error) {
 		console.error("❌ An error occurred:", error);
 	}

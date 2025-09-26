@@ -130,7 +130,13 @@ async function sendInvite(
 		console.log("✅ Connections checked.");
 		console.log("Sending invitations to connections' profiles...");
 
-		await findAndConnectProfileLinks(url, browser, ctx, searchPage, storagePath);
+		await findAndConnectProfileLinks(
+			url,
+			browser,
+			ctx,
+			searchPage,
+			storagePath,
+		);
 		console.log("✅ Invitations sent to connections' profiles.");
 		console.log("All done!");
 	} catch (err) {
