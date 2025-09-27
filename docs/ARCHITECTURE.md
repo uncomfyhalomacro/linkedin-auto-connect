@@ -55,13 +55,15 @@ graph TD
 | John Doe   | `https://linkedin.com/in/...` | Yes             |
 | Jane Smith | `https://linkedin.com/in/...` | No              |
 
-As you have noticed, we need three tables: 
+We need two tables: 
 
 - one for the scraper profile (since we might use different accounts)
-- one for the names of the user profiles; and 
 - one for the links.
 
-Of course, by default, we also have an ID already so the schema in SQL can look like this
+That's because the only unique identifier for
+a link is its hash.
+
+Of course, by default, we also have an ID already so the schema in SQL can look like these:
 
 For the scraper profiles (we don't provide URLs for this. We assume that they are ephemeral and not
 essential since we can always update the keys. They are only useful for logging. The *secret* is an encrypted auth
@@ -77,17 +79,6 @@ CREATE TABLE scraper_profiles (
 )
 ```
 
-For user profiles:
-
-```sql
-CREATE TABLE profiles (
-    id  UUID            PRIMARY KEY,
-    profile_name        TEXT,
-    company             TEXT,
-    is_connected        BOOLEAN
-);
-```
-
 For links:
 
 ```sql
@@ -96,10 +87,6 @@ CREATE TABLE profile_links (
     fetched_at      TIMESTAMP   NOT NULL,
     updated_at      TIMESTAMP   NOT NULL,
     url             TEXT        NOT NULL,      
-    profile_id      UUID        NOT NULL,         
-    CONSTRAINT FK_profile_id
-    FOREIGN KEY(profile_id) REFERENCES profiles(id)
-    ON DELETE SET NULL ON UPDATE CASCADE,
-    UNIQUE(url)
+    name            TEXT        NOT NULL,         
 );
 ```
