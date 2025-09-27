@@ -46,7 +46,7 @@ Of course, this fails if the user has set their profile private or is already a 
 
 > [!NOTE]
 > Work in progress. We still have to
-> 1. Pass the `.env` values over e.g. in CI.
+> 1. ~~Pass the `.env` values over e.g. in CI.~~ DONE
 > 2. Store LinkedIn profiles.
 
 If you want to use and ensure that the project is working universally, you can use `docker` or `podman`. 
@@ -81,3 +81,33 @@ psql postgres://devuser:devpassword@db:5432/devdb
 > [!WARNING]
 > For now, this file is in non-production use. It's not advisable to
 have the credentials for this database exposed in the compose file.
+
+
+# TROUBLESHOOTING
+
+## Playwright does not work inside container.
+
+Try running it locally. First you have to expose the database's port in the `docker-compose.yml` file e.g. `5432:5432` and
+restart the container. You can check that the port is exposed by checking with netcat e.g. `nc -vz localhost 5432`.
+
+Edit the `.env.database` file by pointing `PGHOST` to `localhost` or any host machine's `$HOSTNAME` or `$HOST`.
+
+Run the following commands.
+
+```bash
+source .env
+source .env.database
+npm run start https://linkedin.com
+```
+
+If necessary e.g. your storage state has expired, you can do the following to refresh your storage state by logging in again.
+
+```bash
+node src/runSaveState.ts
+source .env
+source .env.database
+```
+
+> [!IMPORTANT]
+> If you logged in too many times, LinkedIn will likely
+> limit your session time.
