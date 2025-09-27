@@ -138,10 +138,10 @@ async function sendInvite(url: string, page: Page) {
 				cleanProfileUrl: cleanProfileUrl,
 				name: who,
 			});
-			console.log("✅ Link added to database")
+			console.log("✅ Link added to database");
 		} else {
-			await profileLink.update({ updatedAt: new Date() }, { where: { memberIdUrl : memberIdUrl }})
-			console.log("✅ Link updated in database")
+			await profileLink.increment("nonce", { by: 1 })
+			console.log("✅ Link updated in database");
 		}
 
 		console.log("Checking profile connections...");

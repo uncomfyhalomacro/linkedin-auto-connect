@@ -1,5 +1,7 @@
 // Usage: node linkedin-invite.js "<profile_url>" <storage_state.json> [--headed]
 
+import path from "node:path";
+import { loadEnvFile } from "node:process";
 import checkConnections from "./checkConnections.ts";
 import { sq } from "./database/init.js";
 import ScraperModel from "./database/models/ScraperModel.js";
@@ -10,10 +12,12 @@ import sendInvite from "./sendInvite.ts";
 
 // CLI
 (async () => {
+	
 	// loadEnvFile(path.join(path.dirname(process.argv0), ".env"));
 	// loadEnvFile(
 	// 	path.join(path.dirname(process.argv0), ".env.database.troubleshoot"),
 	// );
+
 	await sq
 		.authenticate()
 		.then(async () => {
@@ -25,6 +29,7 @@ import sendInvite from "./sendInvite.ts";
 		.catch((err) => {
 			console.error("Unable to connect to the database:", err);
 		});
+		
 	const [url, maybeHeaded] = process.argv.slice(2);
 	const secret = process.env["STORAGE_STATE_SECRET"];
 	const key = process.env["STORAGE_STATE_KEY"];
@@ -57,10 +62,7 @@ import sendInvite from "./sendInvite.ts";
 			secret: secret,
 		});
 	} else {
-		await scraperProfile.update(
-			{ updatedAt: new Date() },
-			{ where: { secret: secret } },
-		);
+		await scraperProfile.increment("nonce", { by: 1 })
 	}
 
 	const { browser, ctx, page } = await initialiseBrowser(storage, {
@@ -70,7 +72,7 @@ import sendInvite from "./sendInvite.ts";
 		console.error("❌ Failed to initialize browser or page.");
 		process.exit(1);
 	}
-	
+
 	await sendInvite(url, page);
 	const searchPage = await checkConnections(page, ctx);
 	console.log("✅ Connections checked.");
@@ -88,8 +90,5 @@ import sendInvite from "./sendInvite.ts";
 	await browser.close();
 	console.log(`Adding scraper profile secret to Postgres DB...`);
 
-	await scraperProfile.update(
-		{ updatedAt: new Date() },
-		{ where: { secret: secret } },
-	);
+	await scraperProfile.increment("nonce", { by: 1 })
 })();
