@@ -20,7 +20,7 @@ services:
       - /home/node/app/node_modules
       # Don't overwrite the .cache directory that contains the playwright dependencies
       - /home/node/.cache
-    command: npm start "https://www.linkedin.com/in/angelofallaria"
+    command: npm start "https://www.linkedin.com/in"
 
   # The PostgreSQL database service
   db:
