@@ -44,6 +44,6 @@ graph TD
 > [!IMPORTANT]
 > Some links actually point to the same profile since LinkedIn provides a **hashed** variant for said profile e.g.
 > `linkedin.com/in/user` -> `linkedin.com/in/abcdefgh123`. Obviously, it won't make sense to create multiple
-> hashes for one profile so at most, there is 2 links that point to 1 profile so deduplication can be ignored.
+> hashes for one profile so at most, there are 2 links that point to 1 profile so deduplication can be ignored.
 > We can expose, however, that they point to the same person when we expose the API
 
