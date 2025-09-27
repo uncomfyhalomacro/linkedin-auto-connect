@@ -99,7 +99,7 @@ CREATE TABLE profile_links (
     profile_id      UUID        NOT NULL,         
     CONSTRAINT FK_profile_id
     FOREIGN KEY(profile_id) REFERENCES profiles(id)
-    ON DELETE CASCADE,
-    UNIQUE(url, profile_id)
+    ON DELETE SET NULL ON UPDATE CASCADE,
+    UNIQUE(url)
 );
 ```
