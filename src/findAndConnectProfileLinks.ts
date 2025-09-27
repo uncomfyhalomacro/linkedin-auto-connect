@@ -90,7 +90,7 @@ async function findAndConnectProfileLinks(
 				if (success) {
 					atLeastOneSuccess = true;
 					numberOfConnsSent += 1;
-					currentScraperProfile.increment("connections", { by: 1 });
+					await currentScraperProfile.increment("connections", { by: 1 });
 				}
 
 				// Throttle requests to mimic human behavior
