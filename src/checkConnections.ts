@@ -70,7 +70,6 @@ async function checkConnections(page: Page, _ctx: BrowserContext) {
 			timeout: 0,
 		});
 		console.log("Confirmed page content is visible.");
-		await page.screenshot({ path: "final-page-view.png" }).catch(() => {});
 		// --- Your automation logic ends here ---
 	} catch (error) {
 		console.error("❌ An error occurred:", error);
