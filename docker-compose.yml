@@ -5,7 +5,9 @@ version: '3.8'
 services:
   # The Node.js application service
   app:
-    build: .  # Find Dockerfile here
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     ports:
       - "3000:3000" # Map host port 3000 to container port 3000
     env_file:
