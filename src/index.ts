@@ -1,7 +1,9 @@
 // Usage: node linkedin-invite.js "<profile_url>" <storage_state.json> [--headed]
 
 import { env } from "node:process";
+import checkConnections from "./checkConnections.ts";
 import { decryptJson } from "./encryption.ts";
+import findAndConnectProfileLinks from "./findAndConnectProfileLinks.ts";
 import initialiseBrowser from "./initialiseBrowser.ts";
 import sendInvite from "./sendInvite.ts";
 
@@ -40,7 +42,20 @@ import sendInvite from "./sendInvite.ts";
 		process.exit(1);
 	}
 
-	await sendInvite(url, storage, browser, ctx, page);
+	const visitedProfiles: Array<string> = [url];
+	await sendInvite(url, page);
+	const searchPage = await checkConnections(page, ctx);
+	console.log("✅ Connections checked.");
+	console.log("Sending invitations to connections' profiles...");
+
+	const successFinding = await findAndConnectProfileLinks(
+		url,
+		searchPage,
+		visitedProfiles,
+	);
+	if (successFinding)
+		console.log("✅ Invitations sent to connections' profiles.");
+	console.log("All done!");
 	await ctx.close();
 	await browser.close();
 })();

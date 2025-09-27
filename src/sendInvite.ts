@@ -1,17 +1,9 @@
-import type { Browser, BrowserContext, Page } from "playwright";
-import checkConnections from "./checkConnections.ts";
+import type { Page } from "playwright";
 import { clickFirstVisible, escRe } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
-import findAndConnectProfileLinks from "./findAndConnectProfileLinks.ts";
 import type { InvitationStatus } from "./types.ts";
 
-async function sendInvite(
-	url: string,
-	storagePath: string,
-	browser: Browser,
-	ctx: BrowserContext,
-	page: Page,
-) {
+async function sendInvite(url: string, page: Page) {
 	// i18n label patterns
 	const CONNECT =
 		/(Connect|Vernetzen|Se connecter|Conectar|Collegati|Conectar-se)/i;
@@ -138,21 +130,6 @@ async function sendInvite(
 		await page.waitForLoadState("networkidle").catch((err) => {
 			console.log(err);
 		});
-
-		const searchPage = await checkConnections(page, ctx);
-		console.log("✅ Connections checked.");
-		console.log("Sending invitations to connections' profiles...");
-
-		const successFinding = await findAndConnectProfileLinks(
-			url,
-			browser,
-			ctx,
-			searchPage,
-			storagePath,
-		);
-		if (successFinding)
-			console.log("✅ Invitations sent to connections' profiles.");
-		console.log("All done!");
 	} catch (err) {
 		console.error("❌ Error in sendInvite:", err);
 		await generateDebugInfoPng(page).catch((err) => {
