@@ -5,7 +5,10 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends git && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /home/node/app/node_modules && mkdir -p /home/node/.cache/ms-playwright && chown -R node:node /home/node/app
+RUN mkdir -p /home/node/app/node_modules && \
+    mkdir -p /home/node/.cache/ms-playwright && \
+    chown -R node:node /home/node/app && \
+    chown -R node:node /home/node/.cache
 
 # Set the working directory inside the container
 WORKDIR /home/node/app
@@ -14,9 +17,10 @@ RUN npx playwright install-deps chromium
 
 USER node
 
-COPY package*.json ./
+COPY --chown=node:node package*.json ./
 
-RUN npm ci
+RUN npm install && \
+    npx playwright install chromium
 
 COPY --chown=node:node . .
 
