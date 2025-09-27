@@ -1,39 +1,41 @@
 import { DataTypes, Model } from "sequelize";
 import { sq } from "../init.js";
 
-
 class ProfileLinks extends Model {}
 
 ProfileLinks.init(
-    {
-        id: {
+	{
+		id: {
 			type: DataTypes.UUID,
 			primaryKey: true,
 			defaultValue: DataTypes.UUIDV4, // This performs an auto generation of the UUIDs
 		},
-        memberIdUrl: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-            unique: true
-        },
-        cleanProfileUrl: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-            unique: true
-        },
-        name: {
-            type: DataTypes.TEXT,
-            allowNull: true
+		memberIdUrl: {
+			type: DataTypes.TEXT,
+			allowNull: false,
+			unique: true,
+		},
+		cleanProfileUrl: {
+			type: DataTypes.TEXT,
+			allowNull: false,
+			unique: true,
+		},
+		name: {
+			type: DataTypes.TEXT,
+			allowNull: true,
+		},
+        nonce: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
         }
-    },
-    {
+	},
+	{
 		sequelize: sq,
 		modelName: "profile_links",
 		timestamps: true,
-		createdAt: 'fetched_at',
-		updatedAt: 'updated_at'
+		createdAt: "fetched_at",
+		updatedAt: "updated_at",
 	},
-
-)
+);
 
 export default ProfileLinks;

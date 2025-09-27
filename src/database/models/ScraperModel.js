@@ -17,6 +17,10 @@ ScraperModel.init(
 			type: DataTypes.INTEGER,
 			defaultValue: 0,
 		},
+		nonce: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        }
 	},
 	{
 		sequelize: sq,
