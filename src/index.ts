@@ -3,6 +3,7 @@
 import path from "node:path";
 import { loadEnvFile } from "node:process";
 import checkConnections from "./checkConnections.ts";
+import { getHashFormOfLink } from "./common.ts";
 import { sq } from "./database/init.js";
 import ScraperModel from "./database/models/ScraperModel.js";
 import { decryptJson } from "./encryption.ts";
@@ -12,18 +13,21 @@ import sendInvite from "./sendInvite.ts";
 
 // CLI
 (async () => {
-	// loadEnvFile(path.join(path.dirname(process.argv0), ".env"))
-	// loadEnvFile(path.join(path.dirname(process.argv0), ".env.database"))
-	await sq.authenticate()
-	.then(async () => {
-		await sq.sync({ alter: true }).then(() => {
-			console.log("Database synchronized");
+	// loadEnvFile(path.join(path.dirname(process.argv0), ".env"));
+	// loadEnvFile(
+	// 	path.join(path.dirname(process.argv0), ".env.database.troubleshoot"),
+	// );
+	await sq
+		.authenticate()
+		.then(async () => {
+			await sq.sync({ alter: true }).then(() => {
+				console.log("Database synchronized");
+			});
+			console.log("Connection has been established successfully");
+		})
+		.catch((err) => {
+			console.error("Unable to connect to the database:", err);
 		});
-		console.log("Connection has been established successfully");
-	})
-	.catch((err) => {
-		console.error("Unable to connect to the database:", err);
-	});
 	const [url, maybeHeaded] = process.argv.slice(2);
 	const secret = process.env["STORAGE_STATE_SECRET"];
 	const key = process.env["STORAGE_STATE_KEY"];
@@ -56,7 +60,10 @@ import sendInvite from "./sendInvite.ts";
 			secret: secret,
 		});
 	} else {
-		await scraperProfile.update({ last_used: new Date() }, { where: { url: url } });
+		await scraperProfile.update(
+			{ updatedAt: new Date() },
+			{ where: { secret: secret } },
+		);
 	}
 
 	const { browser, ctx, page } = await initialiseBrowser(storage, {
@@ -77,7 +84,7 @@ import sendInvite from "./sendInvite.ts";
 		url,
 		searchPage,
 		visitedProfiles,
-		scraperProfile
+		scraperProfile,
 	);
 	if (successFinding)
 		console.log("✅ Invitations sent to connections' profiles.");
@@ -86,5 +93,8 @@ import sendInvite from "./sendInvite.ts";
 	await browser.close();
 	console.log(`Adding scraper profile secret to Postgres DB...`);
 
-	await scraperProfile.update({ last_used: new Date() }, { where: { secret: secret } })
+	await scraperProfile.update(
+		{ updatedAt: new Date() },
+		{ where: { secret: secret } },
+	);
 })();
