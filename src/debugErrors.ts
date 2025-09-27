@@ -12,7 +12,7 @@ const generateDebugInfoPng = async (page: Page) => {
 	}
 
 	const outputPath = path.join(debugOutDir, `${dateFileNameFormat}.png`);
-	await page.screenshot({ fullPage: true, path: outputPath });
+	await page.screenshot({ fullPage: false, path: outputPath });
 	console.log(`✅ Debugs saved to ${outputPath}.`);
 };
 
