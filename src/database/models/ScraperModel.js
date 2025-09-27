@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sq } from "../init.js";
+import ProfileLinks from "./ProfileLinks.js";
 
 class ScraperModel extends Model {}
 ScraperModel.init(
@@ -15,15 +16,15 @@ ScraperModel.init(
 		},
 		connections: {
 			type: DataTypes.INTEGER,
-			defaultValue: 0
-		}
+			defaultValue: 0,
+		},
 	},
 	{
 		sequelize: sq,
 		modelName: "scraper_profiles",
 		timestamps: true,
-		createdAt: 'first_used',
-		updatedAt: 'last_used'
+		createdAt: "first_used",
+		updatedAt: "last_used",
 	},
 );
 
