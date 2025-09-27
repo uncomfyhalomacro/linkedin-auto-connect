@@ -1,5 +1,7 @@
 // findProfileLinks.ts
 import type { Page } from "playwright";
+import { Op } from "sequelize";
+import ProfileLinks from "./database/models/ProfileLinks.js";
 import type ScraperModel from "./database/models/ScraperModel.js";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import sendInvite from "./sendInvite.ts";
@@ -11,7 +13,6 @@ function sleep(ms: number): Promise<void> {
 async function findAndConnectProfileLinks(
 	url: string,
 	page: Page,
-	visitedProfiles: string[] | undefined,
 	currentScraperProfile: ScraperModel,
 ) {
 	try {
@@ -70,7 +71,16 @@ async function findAndConnectProfileLinks(
 		// Use a for...of loop to handle async operations sequentially
 		for (const [index, filteredUrl] of filteredUrls.entries()) {
 			try {
-				if (filteredUrl === url || visitedProfiles?.includes(filteredUrl)) {
+				const profileLink = await ProfileLinks.findOne({
+					where: {
+						[Op.or]: {
+							memberIdUrl: filteredUrl,
+							cleanProfileUrl: filteredUrl,
+						},
+					},
+				});
+
+				if (filteredUrl === url || profileLink != null) {
 					console.log(`Skipping profile URL: ${filteredUrl}`);
 					continue; // Skip sending invite to profile passed from sendInvite
 				}
@@ -85,7 +95,6 @@ async function findAndConnectProfileLinks(
 
 				// Throttle requests to mimic human behavior
 				await sleep(2000 + Math.random() * 3000); // Wait 2-5 seconds
-				visitedProfiles?.push(filteredUrl);
 			} catch (err) {
 				console.error(`❌ Error sending invite to ${filteredUrl}:`, err);
 				await generateDebugInfoPng(page).catch((err) => {
