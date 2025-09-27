@@ -6,26 +6,24 @@ ScraperModel.init(
 	{
 		id: {
 			type: DataTypes.UUID,
-			allowNull: false,
 			primaryKey: true,
-			defaultValue: DataTypes.UUID4, // This performs an auto generation of the UUIDs
+			defaultValue: DataTypes.UUIDV4, // This performs an auto generation of the UUIDs
 		},
-		url: {
+		secret: {
 			type: DataTypes.TEXT,
 			allowNull: false,
 		},
-		first_used: {
-			type: DataTypes.TIME,
-			allowNull: false,
-		},
-		last_used: {
-			type: DataTypes.TIME,
-			allowNull: false,
-		},
+		connections: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		}
 	},
 	{
 		sequelize: sq,
 		modelName: "scraper_profiles",
+		timestamps: true,
+		createdAt: 'first_used',
+		updatedAt: 'last_used'
 	},
 );
 

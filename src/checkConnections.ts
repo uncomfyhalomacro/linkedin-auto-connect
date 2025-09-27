@@ -1,5 +1,6 @@
 // Import necessary types from Playwright
 import type { BrowserContext, Page } from "playwright";
+import { generateDebugInfoPng } from "./debugErrors.ts";
 
 // Main logic is wrapped in an async function
 async function checkConnections(page: Page, _ctx: BrowserContext) {
@@ -16,6 +17,7 @@ async function checkConnections(page: Page, _ctx: BrowserContext) {
 			// --- This block ONLY runs if the direct click fails ---
 			console.error("❌ Direct click failed:", error);
 			console.error("Trying fallback methods...");
+			await generateDebugInfoPng(page);
 
 			try {
 				// --- Attempt 2: Find link by text and navigate ---
@@ -67,7 +69,7 @@ async function checkConnections(page: Page, _ctx: BrowserContext) {
 		// to confirm the page is loaded before scraping or continuing.
 		await page.waitForSelector("svg.navigational-filter-dropdown__caret-icon", {
 			state: "visible",
-			timeout: 0,
+			timeout: 7000,
 		});
 		console.log("Confirmed page content is visible.");
 		// --- Your automation logic ends here ---

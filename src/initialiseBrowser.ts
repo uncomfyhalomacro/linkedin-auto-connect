@@ -2,14 +2,13 @@ import { chromium } from "playwright";
 import type { StorageState } from "./types.ts";
 
 const initialiseBrowser = async (
-	storageState: string,
+	storageState: StorageState,
 	opts: { headed?: boolean } = {},
 ) => {
-	const storageStateObj: StorageState = JSON.parse(storageState);
-	const browser = await chromium.launch({ headless: !opts.headed });
+	const browser = await chromium.launch({ headless: true });
 	const ctx = await browser.newContext({
 		locale: "en-US",
-		storageState: storageStateObj,
+		storageState: storageState,
 		extraHTTPHeaders: { "Accept-Language": "en-US,en;q=0.9" },
 	});
 

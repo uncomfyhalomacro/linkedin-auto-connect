@@ -1,5 +1,6 @@
 // findProfileLinks.ts
 import type { Page } from "playwright";
+import type ScraperModel from "./database/models/ScraperModel.js";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import sendInvite from "./sendInvite.ts";
 
@@ -11,6 +12,7 @@ async function findAndConnectProfileLinks(
 	url: string,
 	page: Page,
 	visitedProfiles: string[] | undefined,
+	currentScraperProfile: ScraperModel,
 ) {
 	try {
 		console.log("Page loaded. Searching for profile links...");
@@ -64,6 +66,7 @@ async function findAndConnectProfileLinks(
 
 		let atLeastOneSuccess = false;
 		let numberOfConnsSent = 0;
+
 		// Use a for...of loop to handle async operations sequentially
 		for (const [index, filteredUrl] of filteredUrls.entries()) {
 			try {
@@ -77,6 +80,7 @@ async function findAndConnectProfileLinks(
 				if (success) {
 					atLeastOneSuccess = true;
 					numberOfConnsSent += 1;
+					currentScraperProfile.increment('connections', { by: 1 })
 				}
 
 				// Throttle requests to mimic human behavior
