@@ -1,9 +1,6 @@
 // Usage: node linkedin-invite.js "<profile_url>" <storage_state.json> [--headed]
 
-import path from "node:path";
-import { loadEnvFile } from "node:process";
 import checkConnections from "./checkConnections.ts";
-import { getHashFormOfLink } from "./common.ts";
 import { sq } from "./database/init.js";
 import ScraperModel from "./database/models/ScraperModel.js";
 import { decryptJson } from "./encryption.ts";
@@ -73,8 +70,7 @@ import sendInvite from "./sendInvite.ts";
 		console.error("❌ Failed to initialize browser or page.");
 		process.exit(1);
 	}
-
-	const visitedProfiles: Array<string> = [url];
+	
 	await sendInvite(url, page);
 	const searchPage = await checkConnections(page, ctx);
 	console.log("✅ Connections checked.");
@@ -83,7 +79,6 @@ import sendInvite from "./sendInvite.ts";
 	const successFinding = await findAndConnectProfileLinks(
 		url,
 		searchPage,
-		visitedProfiles,
 		scraperProfile,
 	);
 	if (successFinding)
