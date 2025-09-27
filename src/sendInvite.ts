@@ -1,9 +1,11 @@
 import type { Page } from "playwright";
-import { clickFirstVisible, escRe } from "./common.ts";
+import { clickFirstVisible, escRe, getHashFormOfLink } from "./common.ts";
+import ProfileLinks from "./database/models/ProfileLinks.js";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import type { InvitationStatus } from "./types.ts";
 
 async function sendInvite(url: string, page: Page) {
+	const maybeMemberIdFormUrl = await getHashFormOfLink(page, url);
 	// i18n label patterns
 	const CONNECT =
 		/(Connect|Vernetzen|Se connecter|Conectar|Collegati|Conectar-se)/i;
@@ -15,7 +17,7 @@ async function sendInvite(url: string, page: Page) {
 	let invitationStatus: InvitationStatus = "fail";
 
 	try {
-		await page.goto(url, { waitUntil: "domcontentloaded", timeout: 0 });
+		await page.goto(maybeMemberIdFormUrl, { waitUntil: "domcontentloaded", timeout: 0 });
 		const h1 = page
 			.getByRole("main")
 			.getByRole("heading", { level: 1 })
@@ -126,10 +128,27 @@ async function sendInvite(url: string, page: Page) {
 			// TODO: Save to database link and name.
 		}
 
-		console.log("Checking profile connections...");
-		await page.waitForLoadState("networkidle", { timeout: 20000 }).catch((err) => {
-			console.log(err);
+		let profileLink = await ProfileLinks.findOne({
+			where: { url: maybeMemberIdFormUrl },
 		});
+
+		if (!profileLink) {
+			profileLink = await ProfileLinks.create({
+				url: maybeMemberIdFormUrl,
+				name: who,
+			});
+			console.log("✅ Link added to database")
+		} else {
+			await profileLink.update({ updatedAt: new Date() }, { where: { url : maybeMemberIdFormUrl }})
+			console.log("✅ Link updated in database")
+		}
+
+		console.log("Checking profile connections...");
+		await page
+			.waitForLoadState("networkidle", { timeout: 20000 })
+			.catch((err) => {
+				console.log(err);
+			});
 	} catch (err) {
 		console.error("❌ Error in sendInvite:", err);
 		await generateDebugInfoPng(page).catch((err) => {
