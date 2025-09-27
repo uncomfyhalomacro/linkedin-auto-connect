@@ -30,6 +30,8 @@ services:
     image: postgres:16-alpine # Use the official Postgres 16 Alpine image
     env_file:
       - .env.postgres-init
+    # ports:
+    #   - "5432:5432" Expose if troubleshooting locally
     volumes:
       # Persist database data in a named volume
       - postgres_data:/var/lib/postgresql/data
