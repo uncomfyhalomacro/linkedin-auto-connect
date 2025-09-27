@@ -127,7 +127,7 @@ async function sendInvite(url: string, page: Page) {
 		}
 
 		console.log("Checking profile connections...");
-		await page.waitForLoadState("networkidle").catch((err) => {
+		await page.waitForLoadState("networkidle", { timeout: 20000 }).catch((err) => {
 			console.log(err);
 		});
 	} catch (err) {
