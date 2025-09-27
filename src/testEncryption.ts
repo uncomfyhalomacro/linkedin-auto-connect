@@ -30,11 +30,9 @@ async function testEncryption() {
 
 	const iv = randomBytes(16);
 
-	const encryptedData = Buffer.from(await crypto.subtle.encrypt(
-		{ name: "AES-GCM", iv: iv },
-		key,
-		data,
-	));
+	const encryptedData = Buffer.from(
+		await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, data),
+	);
 
 	const combined = Buffer.concat([iv, new Uint8Array(encryptedData)]);
 	const combinedBase64 = combined.toString("base64");

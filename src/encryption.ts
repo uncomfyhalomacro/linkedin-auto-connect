@@ -27,7 +27,7 @@ async function encryptJson(cookies: StorageState) {
 
 	const combined = Buffer.concat([iv, new Uint8Array(encryptedData)]);
 
-	return { exportedKey, combined} ; // Returns an { Buffer<ArrayBuffer>, Buffer<ArrayBuffer> }
+	return { exportedKey, combined }; // Returns an { Buffer<ArrayBuffer>, Buffer<ArrayBuffer> }
 }
 
 function decodeBase64ToUint8Array(base64: string) {

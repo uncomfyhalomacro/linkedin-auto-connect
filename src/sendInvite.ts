@@ -1,7 +1,9 @@
 import type { Browser, BrowserContext, Page } from "playwright";
 import checkConnections from "./checkConnections.ts";
 import { clickFirstVisible, escRe } from "./common.ts";
+import { generateDebugInfoPng } from "./debugErrors.ts";
 import findAndConnectProfileLinks from "./findAndConnectProfileLinks.ts";
+import type { InvitationStatus } from "./types.ts";
 
 async function sendInvite(
 	url: string,
@@ -17,6 +19,8 @@ async function sendInvite(
 	const SEND = /(Send( without a note)?|Senden|Envoyer|Enviar|Invia)/i;
 	// Only these truly mean “already sent”
 	const PENDING = /(Pending|Ausstehend|Withdraw)/i;
+
+	let invitationStatus: InvitationStatus = "fail";
 
 	try {
 		await page.goto(url, { waitUntil: "domcontentloaded", timeout: 0 });
@@ -72,7 +76,7 @@ async function sendInvite(
 		}
 
 		// 4) If still nothing, only now check if it’s actually pending
-		let maybeAlreadyConnected = false;
+
 		if (!clicked) {
 			const isPending = await page
 				.getByRole("main")
@@ -82,7 +86,7 @@ async function sendInvite(
 				.catch(() => false);
 			if (isPending) {
 				console.log("ℹ️ Invitation already pending.");
-				maybeAlreadyConnected = true;
+				invitationStatus = "pending";
 				console.log("Checking profile connections...");
 			}
 
@@ -99,53 +103,77 @@ async function sendInvite(
 				if (n.role === "button" && n.name) btnNames.push(n.name);
 				(n.children || []).forEach(walk);
 			})(acc);
-			console.log(
-				"❌ No Connect found. Accessible header button names:",
-				btnNames,
-			);
-			await page.screenshot({ path: "debug-header.png" }).catch(() => {});
-			console.log(
-				"❌ Screenshot saved as debug-header.png for debugging purposes.",
-				"Warning: Maybe we already have a connection?",
-			);
-			maybeAlreadyConnected = true;
+
+			if (btnNames.length === 0) {
+				console.log(
+					"❌ No Connect found. Accessible header button names:",
+					btnNames,
+				);
+				await generateDebugInfoPng(page).catch((err) => {
+					console.log(
+						"‼️ Something went wrong when saving the debug log: ",
+						err,
+					);
+				});
+			}
 		}
 
 		// 5) Dialog: click “Send / Send without a note”
 		const dlg = page.getByRole("dialog");
-		await clickFirstVisible([
+		const successInvite = await clickFirstVisible([
 			dlg.getByRole("button", { name: SEND }).first(),
 			dlg.locator(`button:text-matches("${SEND.source}")`).first(),
 		]);
 		await page.waitForTimeout(500); // settle
 
 		const who = (await h1.innerText().catch(() => "")).trim();
-		if (!maybeAlreadyConnected) {
+
+		if (successInvite) {
+			invitationStatus = "sent";
 			console.log(`✅ Invite sent${who ? ` to ${who}` : ""}.`);
+			// TODO: Save to database link and name.
 		}
+
 		console.log("Checking profile connections...");
-		await page.waitForLoadState("networkidle").catch(() => {});
+		await page.waitForLoadState("networkidle").catch((err) => {
+			console.log(err);
+		});
 
 		const searchPage = await checkConnections(page, ctx);
 		console.log("✅ Connections checked.");
 		console.log("Sending invitations to connections' profiles...");
 
-		await findAndConnectProfileLinks(
+		const successFinding = await findAndConnectProfileLinks(
 			url,
 			browser,
 			ctx,
 			searchPage,
 			storagePath,
 		);
-		console.log("✅ Invitations sent to connections' profiles.");
+		if (successFinding)
+			console.log("✅ Invitations sent to connections' profiles.");
 		console.log("All done!");
 	} catch (err) {
 		console.error("❌ Error in sendInvite:", err);
-		await page.screenshot({ path: "error-screenshot.png" }).catch(() => {});
+		await generateDebugInfoPng(page).catch((err) => {
+			console.log("‼️ Something went wrong when saving the debug log: ", err);
+		});
 		console.log(
 			"❌ Screenshot saved as error-screenshot.png for debugging purposes.",
 		);
+		return { status: invitationStatus, success: false, fail: true };
 	}
+	let result: { status: InvitationStatus; success: boolean; fail: boolean };
+
+	switch (invitationStatus) {
+		case "sent":
+			result = { status: invitationStatus, success: true, fail: false };
+			break; // Stops execution from continuing to the next case
+		default: // 'pending' and 'default' have the same outcome, so they can be grouped
+			result = { status: invitationStatus, success: false, fail: true };
+			break;
+	}
+	return result;
 }
 
 export default sendInvite;

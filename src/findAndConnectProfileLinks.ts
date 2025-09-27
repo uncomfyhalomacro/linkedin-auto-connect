@@ -1,5 +1,6 @@
 // findProfileLinks.ts
 import type { Browser, BrowserContext, Page } from "playwright";
+import { generateDebugInfoPng } from "./debugErrors.ts";
 import sendInvite from "./sendInvite.ts";
 
 function sleep(ms: number): Promise<void> {
@@ -24,7 +25,10 @@ async function findAndConnectProfileLinks(
 
 		if (linkLocators.length === 0) {
 			console.log("❌ No matching profile links were found on the page.");
-			return;
+			await generateDebugInfoPng(page).catch((err) => {
+				console.log("‼️ Something went wrong when saving the debug log: ", err);
+			});
+			return false;
 		}
 
 		console.log(
@@ -36,7 +40,7 @@ async function findAndConnectProfileLinks(
 			linkLocators.map(async (locator) => {
 				const href = await locator.getAttribute("href");
 				// Convert the relative URL (e.g., /in/john-doe?...) to an absolute one
-				return new URL(href!, "https://www.linkedin.com").toString();
+				return new URL(href ?? "", "https://www.linkedin.com").toString();
 			}),
 		);
 
@@ -59,6 +63,9 @@ async function findAndConnectProfileLinks(
 		console.log(
 			`✅ ${filteredUrls.length} unique profile URLs found. Starting to send invites...`,
 		);
+
+		let atLeastOneSuccess = false;
+		let numberOfConnsSent = 0;
 		// Use a for...of loop to handle async operations sequentially
 		for (const [index, filteredUrl] of filteredUrls.entries()) {
 			try {
@@ -67,18 +74,37 @@ async function findAndConnectProfileLinks(
 					continue; // Skip sending invite to profile passed from sendInvite
 				}
 				console.log(`${index + 1}: Processing ${filteredUrl}`);
-				await sendInvite(filteredUrl, storageStatePath, browser, ctx, page);
+				const { success } = await sendInvite(
+					filteredUrl,
+					storageStatePath,
+					browser,
+					ctx,
+					page,
+				);
+
+				if (success) {
+					atLeastOneSuccess = true;
+					numberOfConnsSent += 1;
+				}
 
 				// Throttle requests to mimic human behavior
 				await sleep(2000 + Math.random() * 3000); // Wait 2-5 seconds
 			} catch (err) {
 				console.error(`❌ Error sending invite to ${filteredUrl}:`, err);
+				await generateDebugInfoPng(page).catch((err) => {
+					console.log(
+						"‼️ Something went wrong when saving the debug log: ",
+						err,
+					);
+				});
 			}
 		}
 
-		console.log("All connection requests have been processed.");
+		console.log(`${numberOfConnsSent} connections sent`);
+		return atLeastOneSuccess;
 	} catch (error) {
 		console.error("An error occurred:", error);
+		return false;
 	}
 }
 

@@ -2,7 +2,7 @@
 import type { BrowserContext, Page } from "playwright";
 
 // Main logic is wrapped in an async function
-async function checkConnections(page: Page, ctx: BrowserContext) {
+async function checkConnections(page: Page, _ctx: BrowserContext) {
 	try {
 		// This is the action that triggers the navigation
 		try {
@@ -20,11 +20,13 @@ async function checkConnections(page: Page, ctx: BrowserContext) {
 			try {
 				// --- Attempt 2: Find link by text and navigate ---
 				console.log("Fallback 1: Locating link by text...");
-				const connectionsLink = page.getByRole("link", { name: /\/connections\// });
+				const connectionsLink = page.getByRole("link", {
+					name: /\/connections\//,
+				});
 				const connectionURL = await connectionsLink
 					.first()
 					.getAttribute("href");
-				console.log("Connection URL: ", connectionURL)
+				console.log("Connection URL: ", connectionURL);
 
 				if (connectionURL) {
 					const fullUrl = new URL(connectionURL, page.url()).toString();
