@@ -1,23 +1,29 @@
-# Use the official Node.js 22 image based on Alpine Linux
-FROM node:22-alpine
+# Use the official Node.js 22 image based on Debian Linux
+FROM node:22-bookworm-slim
 
-RUN apk add --no-cache git  # Install git to clone repositories if needed or run husky
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /home/node/app/node_modules && mkdir -p /home/node/.cache/ms-playwright && chown -R node:node /home/node/app
 
 # Set the working directory inside the container
-WORKDIR /usr/src/app
+WORKDIR /home/node/app
 
-# Copy package.json and package-lock.json first to leverage Docker cache
+RUN npx playwright install --with-deps chromium
+
+RUN cp -rf /root/.cache/ms-playwright/* /home/node/.cache/ms-playwright && chown -R node:node /home/node/.cache/ms-playwright
+
+USER node
+
 COPY package*.json ./
 
-# Install project dependencies
-RUN npm install
+RUN npm ci
 
-# Copy the rest of your application source code
-COPY . .
+COPY --chown=node:node . .
 
 # Expose the port your Node.js app will run on
 EXPOSE 3000
 
-# The command to run your application
-CMD ["npm", "install"]    # for now run npm install to install dependencies
-# CMD ["npm", "start"]      # Uncomment this line to run the app
+CMD npx playwright --version
+

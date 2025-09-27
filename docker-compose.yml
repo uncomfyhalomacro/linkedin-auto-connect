@@ -5,31 +5,28 @@ version: '3.8'
 services:
   # The Node.js application service
   app:
-    image: node:22-alpine # Use the official Node 22 Alpine image
-    build: . # Build the image from the Dockerfile in the current directory
     ports:
       - "3000:3000" # Map host port 3000 to container port 3000
-    environment:
-      # Pass connection details to the Node app
-      - DATABASE_URL=postgres://devuser:devpassword@db:5432/devdb
+    env_file:
+      - .env
+      - .env.database
     depends_on:
       - db # Wait for the 'db' service to be healthy before starting 'app'
-    working_dir: /usr/src/app
+    working_dir: /home/node/app
     volumes:
       # Mount the current directory into the container for live code updates
-      - .:/usr/src/app
+      - .:/home/node/app
       # Don't overwrite the node_modules folder in the container
-      - /usr/src/app/node_modules
-    command: npm install
+      - /home/node/app/node_modules
+      # Don't overwrite the .cache directory that contains the playwright dependencies
+      - /home/node/.cache
+    command: npm start "https://www.linkedin.com/in/angelofallaria"
 
   # The PostgreSQL database service
   db:
     image: postgres:16-alpine # Use the official Postgres 16 Alpine image
-    environment:
-      # These credentials must match what's in the DATABASE_URL above
-      - POSTGRES_USER=devuser
-      - POSTGRES_PASSWORD=devpassword
-      - POSTGRES_DB=devdb
+    env_file:
+      - .env.postgres-init
     volumes:
       # Persist database data in a named volume
       - postgres_data:/var/lib/postgresql/data
