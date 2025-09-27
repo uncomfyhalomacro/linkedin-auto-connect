@@ -67,7 +67,7 @@ For the scraper profiles:
 
 ```sql
 CREATE TABLE scraper_profiles (
-    id      UUID    PRIMARY KEY,
+    id      UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
     url     TEXT    NOT NULL
     first_used  TIMESTAMP NOT NULL,
     last_used   TIMESTAMP NOT NULL,
