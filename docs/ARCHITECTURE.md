@@ -47,3 +47,61 @@ graph TD
 > hashes for one profile so at most, there are 2 links that point to 1 profile so deduplication can be ignored.
 > We can expose, however, that they point to the same person when we expose the API
 
+## Database Schema
+
+
+| Name       | Links                         | IsConnected     |
+| :--------- | :---------------------------- | :-------------- |
+| John Doe   | `https://linkedin.com/in/...` | Yes             |
+| Jane Smith | `https://linkedin.com/in/...` | No              |
+
+As you have noticed, we need three tables: 
+
+- one for the scraper profile (since we might use different accounts)
+- one for the names of the user profiles; and 
+- one for the links.
+
+Of course, by default, we also have an ID already so the schema in SQL can look like this
+
+For the scraper profiles:
+
+```sql
+CREATE TABLE scraper_profiles (
+    id      UUID    PRIMARY KEY,
+    url     TEXT    NOT NULL
+    first_used  TIMESTAMP NOT NULL,
+    last_used   TIMESTAMP NOT NULL,
+    connections INT DEFAULT
+)
+```
+
+For user profiles:
+
+```sql
+CREATE TABLE profiles (
+    id  UUID            PRIMARY KEY,
+    profile_name        TEXT,
+    company             TEXT,
+    is_connected        BOOLEAN
+);
+```
+
+For links:
+
+```sql
+CREATE TABLE profile_links (
+    id UUID         PRIMARY     KEY,
+    fetched_at      TIMESTAMP   NOT NULL,
+    updated_at      TIMESTAMP   NOT NULL,
+    url             TEXT        NOT NULL,      
+    profile_id      UUID        NOT NULL,         
+    CONSTRAINT FK_profile_id
+    FOREIGN KEY(profile_id) REFERENCES profiles(id)
+    ON DELETE CASCADE,
+    scraper_profile_id  UUID    NOT NULL,
+    CONSTRAINT FK_scraper_profile_id   
+    FOREIGN KEY(scraper_profile_id) REFERENCES scraper_profiles(id)
+    ON DELETE CASCADE,
+    UNIQUE(url, scraper_profile_id, profile_id)
+);
+```
