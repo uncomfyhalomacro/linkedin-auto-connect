@@ -16,8 +16,7 @@ USER node
 
 COPY package*.json ./
 
-# Now you can run chromium headless here without sudo privileges.
-RUN npm ci && npx playwright install --only-shell chromium 
+RUN npm ci
 
 COPY --chown=node:node . .
 
