@@ -100,10 +100,6 @@ CREATE TABLE profile_links (
     CONSTRAINT FK_profile_id
     FOREIGN KEY(profile_id) REFERENCES profiles(id)
     ON DELETE CASCADE,
-    scraper_profile_id  UUID    NOT NULL,
-    CONSTRAINT FK_scraper_profile_id   
-    FOREIGN KEY(scraper_profile_id) REFERENCES scraper_profiles(id)
-    ON DELETE CASCADE,
-    UNIQUE(url, scraper_profile_id, profile_id)
+    UNIQUE(url, profile_id)
 );
 ```
