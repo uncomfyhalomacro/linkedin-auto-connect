@@ -10,7 +10,7 @@ RUN mkdir -p /home/node/app/node_modules && mkdir -p /home/node/.cache/ms-playwr
 # Set the working directory inside the container
 WORKDIR /home/node/app
 
-RUN npx playwright install --with-deps chromium
+RUN npx playwright install --only-shell --with-deps chromium
 
 RUN cp -rf /root/.cache/ms-playwright/* /home/node/.cache/ms-playwright && chown -R node:node /home/node/.cache/ms-playwright
 
