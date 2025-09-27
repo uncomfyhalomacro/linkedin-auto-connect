@@ -63,12 +63,14 @@ As you have noticed, we need three tables:
 
 Of course, by default, we also have an ID already so the schema in SQL can look like this
 
-For the scraper profiles:
+For the scraper profiles (we don't provide URLs for this. We assume that they are ephemeral and not
+essential since we can always update the keys. They are only useful for logging. The *secret* is an encrypted auth
+data):
 
 ```sql
 CREATE TABLE scraper_profiles (
     id      UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
-    url     TEXT    NOT NULL
+    secret     TEXT    NOT NULL
     first_used  TIMESTAMP NOT NULL,
     last_used   TIMESTAMP NOT NULL,
     connections INT DEFAULT
