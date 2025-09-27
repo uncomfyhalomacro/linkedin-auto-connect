@@ -14,27 +14,33 @@ async function getHashFormOfLink(page: Page, url: string) {
 
 	if (!href) {
 		console.error("Could not find the JSON data block on the page.");
-		return url;
+		return {
+			memberIdUrl: url,
+			cleanProfileUrl: url,
+		};
 	}
 
 	// 3. Parse the href string using the URL object
-  const urlWith = new URL(href);
-  
-  // -- Extract the different pieces of information --
+	const urlWith = new URL(href);
 
-  // a) Get the clean profile URL (everything before the '?')
-  const cleanProfileUrl = urlWith.origin + urlWith.pathname;
-  
-  // b) Get the URN from the 'miniProfileUrn' query parameter
-  const miniProfileUrn = urlWith.searchParams.get('miniProfileUrn');
-  
-  // c) Get the Unique Member ID by splitting the URN
-  const memberId = miniProfileUrn ? miniProfileUrn.split(':').pop() : null;
+	// -- Extract the different pieces of information --
 
-  console.log(`✅ Parsing successful!`);
-  console.log(`   Clean Profile URL: ${cleanProfileUrl}`);
-  console.log(`   Unique Member ID: ${memberId}`);
-  return `https://www.linkedin.com/in/${memberId}`
+	// a) Get the clean profile URL (everything before the '?')
+	const cleanProfileUrl = urlWith.origin + urlWith.pathname;
+
+	// b) Get the URN from the 'miniProfileUrn' query parameter
+	const miniProfileUrn = urlWith.searchParams.get("miniProfileUrn");
+
+	// c) Get the Unique Member ID by splitting the URN
+	const memberId = miniProfileUrn ? miniProfileUrn.split(":").pop() : null;
+
+	console.log(`✅ Parsing successful!`);
+	console.log(`   Clean Profile URL: ${cleanProfileUrl}`);
+	console.log(`   Unique Member ID: ${memberId}`);
+	return {
+		memberIdUrl: `https://www.linkedin.com/in/${memberId}`,
+		cleanProfileUrl: cleanProfileUrl,
+	};
 }
 
 async function clickFirstVisible(locs: Locator[]): Promise<boolean> {
