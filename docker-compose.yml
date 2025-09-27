@@ -5,6 +5,7 @@ version: '3.8'
 services:
   # The Node.js application service
   app:
+    build: .  # Find Dockerfile here
     ports:
       - "3000:3000" # Map host port 3000 to container port 3000
     env_file:
@@ -20,7 +21,7 @@ services:
       - /home/node/app/node_modules
       # Don't overwrite the .cache directory that contains the playwright dependencies
       - /home/node/.cache
-    command: npm start "https://www.linkedin.com/in"
+    command: sh -c 'npx playwright install --only-shell chromium && npm start "https://www.linkedin.com/"'
 
   # The PostgreSQL database service
   db:
