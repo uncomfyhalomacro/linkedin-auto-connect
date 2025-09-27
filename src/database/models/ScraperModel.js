@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import { sq } from "../init.js";
-import ProfileLinks from "./ProfileLinks.js";
 
 class ScraperModel extends Model {}
 ScraperModel.init(
