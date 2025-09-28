@@ -8,4 +8,4 @@ migrate-up-0002:
 
 all:
     #!/bin/sh
-    ls *.sql | column -t | sort | xargs -I {} psql "${DATABASE_URL}" -f {}
+    ls *.sql | column -t | sort | xargs -I {} psql "${DATABASE_URL}" -f {} || true
