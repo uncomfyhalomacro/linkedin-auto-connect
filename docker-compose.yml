@@ -32,11 +32,33 @@ services:
       dockerfile: ./Dockerfile.db
     env_file:
       - .env.database
-    # ports:
+    ports:
       - "5432:5432"  # Expose if troubleshooting locally
     volumes:
       # Persist database data in a named volume
       - postgres_data:/var/lib/postgresql/data
+  
+  db-migrate-up:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.db
+    working_dir: /usr/src/scripts
+    volumes:
+      - /usr/src/scripts
+    env_file:
+      - .env.database
+    command: just --timestamp migrate-up
+
+  db-migrate-down:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.db
+    working_dir: /usr/src/scripts
+    volumes:
+      - /usr/src/scripts
+    env_file:
+      - .env.database
+    command: just --timestamp migrate-down
 
 # Define the named volume for data persistence
 volumes:
