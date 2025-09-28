@@ -10,7 +10,6 @@ RUN mkdir -p /home/node/app/node_modules && \
     chown -R node:node /home/node/app && \
     chown -R node:node /home/node/.cache
 
-# Set the working directory inside the container
 WORKDIR /home/node/app
 
 RUN npx playwright install-deps chromium 
@@ -18,7 +17,7 @@ RUN npx playwright install-deps chromium
 COPY --chown=node:node package*.json .
 
 USER node
-# ENV PLAYWRIGHT_BROWSERS_PATH=0  <-- REMOVE THIS LINE
+
 RUN npm ci --ignore-scripts && npx playwright install --no-shell chromium
 
 COPY --chown=node:node . .
