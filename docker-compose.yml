@@ -14,8 +14,10 @@ services:
       - .env
       - .env.database
     depends_on:
-      - db-migrate-up # Wait for the 'db' service to be healthy before starting 'app'
-      - db
+      db:
+        condition: service_healthy # Wait for the 'db' service to be healthy before starting 'app'
+      db-migrate-up:
+        condition: service_completed_successfully
     working_dir: /home/node/app
     volumes:
       # Mount the current directory into the container for live code updates
@@ -33,6 +35,12 @@ services:
       dockerfile: ./Dockerfile.db
     env_file:
       - .env.database
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     ports:
       - "5432:5432"  # Expose if troubleshooting locally
     volumes:
@@ -47,7 +55,8 @@ services:
     volumes:
       - /usr/src/scripts
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env.database
     command: just --timestamp migrate-up
