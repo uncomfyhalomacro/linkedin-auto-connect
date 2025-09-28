@@ -13,6 +13,9 @@ services:
     env_file:
       - .env
       - .env.database
+    environment:
+      - PLAYWRIGHT_SKIP_BROWSER_GC=1
+      - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
     working_dir: /home/node/app
     depends_on:
       - "db"
@@ -22,7 +25,8 @@ services:
       - /home/node/app/node_modules
       # Don't overwrite the .cache directory that contains the playwright dependencies
       - /home/node/.cache
-    command: sh -c 'npx playwright install --no-shell chromium && npm start "https://www.linkedin.com/search/results/people"'
+      - playwright_cache:/home/node/.cache/ms-playwright
+    command: npm start "https://www.linkedin.com/search/results/people"
 
   # The PostgreSQL database service
   db:
@@ -70,3 +74,4 @@ services:
 # Define the named volume for data persistence
 volumes:
   postgres_data:
+  playwright_cache:

@@ -15,17 +15,15 @@ WORKDIR /home/node/app
 
 RUN npx playwright install-deps chromium 
 
-COPY . .
+COPY --chown=node:node package*.json .
 
-RUN rm -rf node_modules && npm install
-#    mkdir -p /home/node/.cache/ms-playwright/chromium_headless_shell-1193/ && \
-#    ln -svf /home/node/.cache/ms-playwright/chromium-1193/chrome-linux /home/node/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux && \
-#    cp -v /home/node/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/chrome \
-#    /home/node/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell && \
-#    chmod -v +x /home/node/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
+USER node
+# ENV PLAYWRIGHT_BROWSERS_PATH=0  <-- REMOVE THIS LINE
+RUN npm ci --ignore-scripts && npx playwright install --no-shell chromium
+
+COPY --chown=node:node . .
 
 # Expose the port your Node.js app will run on
 EXPOSE 3000
 
 CMD npx playwright --version
-
