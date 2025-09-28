@@ -9,13 +9,12 @@ migrate-up:
 migrate-down:
     just migrations/down/all
 
-[positional-arguments]
-run-app argument:
-    {{docker_cmd}} compose up app "$1" "$2"
+run-app *argument:
+    {{docker_cmd}} compose up app {{ argument }}
 
-[positional-arguments]
-cols argument:
-    ls | column $1
+
+down-app:
+    {{docker_cmd}} compose down -v
 
 refresh-save-state:
     npm run saveState
