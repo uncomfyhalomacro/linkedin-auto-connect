@@ -23,9 +23,9 @@ import sendInvite from "./sendInvite.ts";
 			} else if (process.env["NODE_ENV"] === "prod") {
 				console.log("Database running in production mode");
 			} else {
-				await sq.sync({ alter: true }).then(() => {
-					console.log("Database synchronized in development mode");
-				});
+				// await sq.sync({schema}).then(() => {
+				// 	console.log("Database synchronized in development mode");
+				// });
 			}
 			console.log("Connection has been established successfully");
 		})
