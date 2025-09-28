@@ -19,10 +19,10 @@ USER node
 
 COPY --chown=node:node package*.json ./
 
-RUN npm install && \
-    npx playwright install chromium
-
 COPY --chown=node:node . .
+
+RUN rm -rf node_modules && npm install && \
+    npx playwright install chromium
 
 # Expose the port your Node.js app will run on
 EXPOSE 3000
