@@ -1,5 +1,5 @@
 # Use the official Node.js 22 image based on Debian Linux
-FROM node:22-bookworm-slim
+FROM node:bookworm
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git && \
@@ -16,8 +16,6 @@ WORKDIR /home/node/app
 RUN npx playwright install-deps chromium
 
 USER node
-
-COPY --chown=node:node package*.json ./
 
 COPY --chown=node:node . .
 
