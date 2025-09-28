@@ -21,7 +21,7 @@
 	"license": "ISC",
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
-		"@playwright/test": "^1.55.0",
+		"@playwright/test": "^1.55.1",
 		"@types/node": "^24.3.1",
 		"@types/pg": "^8.15.5",
 		"husky": "^9.1.7",
@@ -39,6 +39,7 @@
 		"node-cron": "^4.2.1",
 		"pg": "^8.16.3",
 		"pg-hstore": "^2.3.4",
+		"playwright": "^1.55.1",
 		"sequelize": "^6.37.7"
 	},
 	"lint-staged": {
