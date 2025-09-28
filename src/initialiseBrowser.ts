@@ -5,7 +5,7 @@ const initialiseBrowser = async (
 	storageState: StorageState,
 	opts: { headed?: boolean } = {},
 ) => {
-	const browser = await chromium.launch({ headless: true });
+	const browser = await chromium.launch({ headless: !opts.headed, channel: "chromium" });
 	const ctx = await browser.newContext({
 		locale: "en-US",
 		storageState: storageState,
