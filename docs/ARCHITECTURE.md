@@ -76,7 +76,7 @@ CREATE TABLE scraper_profiles (
     first_used  TIMESTAMP NOT NULL,
     last_used   TIMESTAMP NOT NULL,
     connections INT DEFAULT
-)
+);
 ```
 
 For links:
