@@ -11,7 +11,7 @@ migrate-down:
 
 [positional-arguments]
 run-app argument:
-    {{docker_cmd}} compose up app $@
+    {{docker_cmd}} compose up app "$1" "$2"
 
 [positional-arguments]
 cols argument:
