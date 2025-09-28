@@ -12,24 +12,27 @@ import sendInvite from "./sendInvite.ts";
 
 // CLI
 (async () => {
-	
-	// loadEnvFile(path.join(path.dirname(process.argv0), ".env"));
-	// loadEnvFile(
-	// 	path.join(path.dirname(process.argv0), ".env.database.troubleshoot"),
-	// );
-
 	await sq
 		.authenticate()
 		.then(async () => {
-			await sq.sync({ alter: true }).then(() => {
-				console.log("Database synchronized");
-			});
+			if (process.env["NODE_ENV"] === "troubleshooting") {
+				loadEnvFile(path.join(path.dirname(process.argv0), ".env"));
+				loadEnvFile(
+					path.join(path.dirname(process.argv0), ".env.database.troubleshoot"),
+				);
+			} else if (process.env["NODE_ENV"] === "prod") {
+				console.log("Database running in production mode");
+			} else {
+				await sq.sync({ alter: true }).then(() => {
+					console.log("Database synchronized in development mode");
+				});
+			}
 			console.log("Connection has been established successfully");
 		})
 		.catch((err) => {
 			console.error("Unable to connect to the database:", err);
 		});
-		
+
 	const [url, maybeHeaded] = process.argv.slice(2);
 	const secret = process.env["STORAGE_STATE_SECRET"];
 	const key = process.env["STORAGE_STATE_KEY"];
@@ -62,7 +65,7 @@ import sendInvite from "./sendInvite.ts";
 			secret: secret,
 		});
 	} else {
-		await scraperProfile.increment("nonce", { by: 1 })
+		await scraperProfile.increment("nonce", { by: 1 });
 	}
 
 	const { browser, ctx, page } = await initialiseBrowser(storage, {
@@ -90,5 +93,5 @@ import sendInvite from "./sendInvite.ts";
 	await browser.close();
 	console.log(`Adding scraper profile secret to Postgres DB...`);
 
-	await scraperProfile.increment("nonce", { by: 1 })
+	await scraperProfile.increment("nonce", { by: 1 });
 })();
