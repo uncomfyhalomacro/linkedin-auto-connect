@@ -5,7 +5,7 @@ import { generateDebugInfoPng } from "./debugErrors.ts";
 import type { InvitationStatus } from "./types.ts";
 
 async function sendInvite(url: string, page: Page) {
-	const { memberIdUrl, cleanProfileUrl } = await getHashFormOfLink(page, url);
+	const { memberIdUrl, cleanProfileUrl } = await getHashFormOfLink(page, url)
 	// i18n label patterns
 	const CONNECT =
 		/(Connect|Vernetzen|Se connecter|Conectar|Collegati|Conectar-se)/i;
@@ -17,6 +17,7 @@ async function sendInvite(url: string, page: Page) {
 	let invitationStatus: InvitationStatus = "fail";
 
 	try {
+		await page.goto(memberIdUrl, { waitUntil: "domcontentloaded", timeout: 0 });
 		const h1 = page
 			.getByRole("main")
 			.getByRole("heading", { level: 1 })
