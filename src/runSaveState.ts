@@ -1,3 +1,3 @@
 import saveState from "./saveAuthState.ts";
 
-saveState();
+await saveState().catch((err) => console.error(err));
