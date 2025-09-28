@@ -1,7 +1,7 @@
 
 set dotenv-path := ".env.database"
 
-docker_cmd := shell("command -v podman >/dev/null && echo podman || echo docker")
+docker_cmd := shell("command -v docker >/dev/null && echo docker || echo podman")
 
 migrate-up:
     just migrations/up/all
