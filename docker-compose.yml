@@ -7,7 +7,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.app
     ports:
       - "3000:3000" # Map host port 3000 to container port 3000
     env_file:
@@ -27,11 +27,13 @@ services:
 
   # The PostgreSQL database service
   db:
-    image: postgres:16-alpine # Use the official Postgres 16 Alpine image
+    build:
+      context: .
+      dockerfile: ./Dockerfile.db
     env_file:
-      - .env.postgres-init
+      - .env.database
     # ports:
-    #   - "5432:5432" Expose if troubleshooting locally
+      - "5432:5432"  # Expose if troubleshooting locally
     volumes:
       # Persist database data in a named volume
       - postgres_data:/var/lib/postgresql/data
