@@ -20,7 +20,8 @@ services:
       - /home/node/app/node_modules
       # Don't overwrite the .cache directory that contains the playwright dependencies
       - /home/node/.cache
-    command: npm start "https://www.linkedin.com/"
+      - ./playwrightDebugLogs:/home/node/app/playwrightDebugLogs
+    command: npm start "https://www.linkedin.com/search/results/people"
 
   # The PostgreSQL database service
   db:
