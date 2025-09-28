@@ -1,0 +1,11 @@
+set dotenv-load
+
+migrate-up-0001:
+    -psql "$DATABASE_URL" -f 0001-scraper-profile.sql
+
+migrate-up-0002:
+    -psql "$DATABASE_URL" -f 0002-profile-links.sql
+
+all:
+    #!/bin/sh
+    ls *.sql | column -t | sort | xargs -I {} psql "${DATABASE_URL}" -f {}
