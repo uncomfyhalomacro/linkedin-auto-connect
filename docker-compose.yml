@@ -14,7 +14,8 @@ services:
       - .env
       - .env.database
     depends_on:
-      - db # Wait for the 'db' service to be healthy before starting 'app'
+      - db-migrate-up # Wait for the 'db' service to be healthy before starting 'app'
+      - db
     working_dir: /home/node/app
     volumes:
       # Mount the current directory into the container for live code updates
@@ -45,6 +46,8 @@ services:
     working_dir: /usr/src/scripts
     volumes:
       - /usr/src/scripts
+    depends_on:
+      - db
     env_file:
       - .env.database
     command: just --timestamp migrate-up
@@ -56,6 +59,8 @@ services:
     working_dir: /usr/src/scripts
     volumes:
       - /usr/src/scripts
+    depends_on:
+      - db
     env_file:
       - .env.database
     command: just --timestamp migrate-down
