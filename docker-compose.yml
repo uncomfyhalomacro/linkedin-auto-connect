@@ -14,14 +14,15 @@ services:
       - .env
       - .env.database
     working_dir: /home/node/app
+    depends_on:
+      - "db"
     volumes:
-      - /home/node/app
+      - .:/home/node/app
       # Don't overwrite the node_modules folder in the container
       - /home/node/app/node_modules
       # Don't overwrite the .cache directory that contains the playwright dependencies
       - /home/node/.cache
-      - ./playwrightDebugLogs:/home/node/app/playwrightDebugLogs
-    command: npm start "https://www.linkedin.com/search/results/people"
+    command: sh -c 'npx playwright install --only-shell chromium && npm start "https://www.linkedin.com/search/results/people"'
 
   # The PostgreSQL database service
   db:

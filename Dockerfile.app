@@ -15,12 +15,14 @@ WORKDIR /home/node/app
 
 RUN npx playwright install-deps chromium 
 
-USER node
+COPY . .
 
-COPY --chown=node:node . .
-
-RUN rm -rf node_modules && npm install && \
-    npx playwright install  --no-shell chromium
+RUN rm -rf node_modules && npm install
+#    mkdir -p /home/node/.cache/ms-playwright/chromium_headless_shell-1193/ && \
+#    ln -svf /home/node/.cache/ms-playwright/chromium-1193/chrome-linux /home/node/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux && \
+#    cp -v /home/node/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/chrome \
+#    /home/node/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell && \
+#    chmod -v +x /home/node/.cache/ms-playwright/chromium_headless_shell-1193/chrome-linux/headless_shell
 
 # Expose the port your Node.js app will run on
 EXPOSE 3000
