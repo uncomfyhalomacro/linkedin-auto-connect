@@ -18,7 +18,8 @@ services:
       - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
     working_dir: /home/node/app
     depends_on:
-      - "db"
+      db-migrate-up:
+        condition: service_completed_successfully
     volumes:
       - .:/home/node/app
       # Don't overwrite the node_modules folder in the container
@@ -35,6 +36,12 @@ services:
       dockerfile: ./Dockerfile.db
     env_file:
       - .env.database
+    healthcheck:
+      test: ["CMD-SHELL", "echo ${POSTGRES_USER}"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
     ports:
       - "5432:5432"  # Expose if troubleshooting locally
     volumes:
@@ -45,6 +52,9 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.db
+    depends_on:
+      db-migrate-down:
+        condition: service_completed_successfully
     restart: "no"
     working_dir: /usr/src/scripts
     volumes:
@@ -59,6 +69,9 @@ services:
       dockerfile: ./Dockerfile.db
     restart: "no"
     working_dir: /usr/src/scripts
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       - /usr/src/scripts
     env_file:
