@@ -12,7 +12,13 @@ If you want to use and ensure that the project is working universally, you can u
 > [!NOTE] 
 > Instructions on how to install `docker` or `podman` will not be provided.
 
-Run each service in this order:
+You can run directly this command
+
+```bash
+just run-app --build  # pass --no-cache --force-recreate to recreate the container
+```
+
+Or you can run each service in this order:
 
 **Dev mode**
 
@@ -28,21 +34,23 @@ You can run this command if you want to restart the database from scratch
 
 ```bash
 docker compose build db-migrate-down
-docker compose start db-migrate-down
+docker compose run db-migrate-down
 ```
 
 Otherwise:
 
 ```bash
 docker compose build db-migrate-up  # Optional. Sequelize `sync` runs anyway
-docker compose start db-migrate-up
+docker compose run db-migrate-up
 ```
 
 Terminal 3:
 
+This might restart the db service. You can check the logs and look for the string `linkedin-auto_db_<n>` where n is a number.
+
 ```bash
 docker compose build app
-docker compose start app
+docker compose run app
 ```
 
 To manipulate the database, you can head inside the container.
