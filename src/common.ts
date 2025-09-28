@@ -1,16 +1,25 @@
 import type { Locator, Page } from "playwright";
+import { generateDebugInfoPng } from "./debugErrors.ts";
 
 // This hopefully ensures uniqueness of URLs
 async function getHashFormOfLink(page: Page, url: string) {
 	// 1. Load page first
-	await page.goto(url, { waitUntil: "domcontentloaded", timeout: 0 });
+	await page.goto(url, { waitUntil: "domcontentloaded", timeout: 5000 }).catch(async(err) => {
+		console.error(err)
+		await generateDebugInfoPng(page)
+	})
 	// 2. Locate the link
 	const profileLinkLocator = page
 		.locator('a[href*="/in/"][href*="miniProfileUrn="]')
-		.first();
+		.first()
 
 	// 2. Get the full href attribute as a string
-	const href = await profileLinkLocator.getAttribute("href");
+	const href = await profileLinkLocator
+		.getAttribute("href")
+		.catch(async (err) => {
+			console.error(err);
+			await generateDebugInfoPng(page);
+		});
 
 	if (!href) {
 		console.error("Could not find the JSON data block on the page.");
