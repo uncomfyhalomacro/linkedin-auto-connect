@@ -17,7 +17,6 @@ async function sendInvite(url: string, page: Page) {
 	let invitationStatus: InvitationStatus = "fail";
 
 	try {
-		await page.goto(memberIdUrl, { waitUntil: "domcontentloaded", timeout: 0 });
 		const h1 = page
 			.getByRole("main")
 			.getByRole("heading", { level: 1 })
