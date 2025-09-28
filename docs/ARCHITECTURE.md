@@ -75,7 +75,7 @@ CREATE TABLE scraper_profiles (
     secret     TEXT    NOT NULL
     first_used  TIMESTAMP NOT NULL,
     last_used   TIMESTAMP NOT NULL,
-    connections INT DEFAULT
+    connections INT DEFAULT 0
 );
 ```
 
