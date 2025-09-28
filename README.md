@@ -11,6 +11,7 @@ If you want to use and ensure that the project is working universally, you can u
 
 > [!NOTE] 
 > Instructions on how to install `docker` or `podman` will not be provided.
+> For `just`, follow install instructions from <https://just.systems/man/en/>
 
 You can run directly this command
 
