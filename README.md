@@ -41,7 +41,8 @@ docker compose start db-migrate-up
 Terminal 3:
 
 ```bash
-docker compose up --build app
+docker compose build app
+docker compose start app
 ```
 
 To manipulate the database, you can head inside the container.
