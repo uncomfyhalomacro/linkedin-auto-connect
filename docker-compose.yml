@@ -13,15 +13,9 @@ services:
     env_file:
       - .env
       - .env.database
-    depends_on:
-      db:
-        condition: service_healthy # Wait for the 'db' service to be healthy before starting 'app'
-      db-migrate-up:
-        condition: service_completed_successfully
     working_dir: /home/node/app
     volumes:
-      # Mount the current directory into the container for live code updates
-      - .:/home/node/app
+      - /home/node/app
       # Don't overwrite the node_modules folder in the container
       - /home/node/app/node_modules
       # Don't overwrite the .cache directory that contains the playwright dependencies
@@ -55,9 +49,6 @@ services:
     working_dir: /usr/src/scripts
     volumes:
       - /usr/src/scripts
-    depends_on:
-      db:
-        condition: service_healthy
     env_file:
       - .env.database
     command: just --timestamp migrate-up
@@ -70,8 +61,6 @@ services:
     working_dir: /usr/src/scripts
     volumes:
       - /usr/src/scripts
-    depends_on:
-      - db
     env_file:
       - .env.database
     command: just --timestamp migrate-down
