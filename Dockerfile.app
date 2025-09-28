@@ -13,7 +13,7 @@ RUN mkdir -p /home/node/app/node_modules && \
 # Set the working directory inside the container
 WORKDIR /home/node/app
 
-RUN npx playwright install-deps chromium
+RUN npx playwright install-deps --no-shell chromium 
 
 USER node
 
