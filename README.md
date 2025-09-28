@@ -27,13 +27,15 @@ Terminal 2:
 You can run this command if you want to restart the database from scratch
 
 ```bash
-docker compose up --build db-migrate-down
+docker compose build db-migrate-down
+docker compose start db-migrate-down
 ```
 
 Otherwise:
 
 ```bash
-docker compose up --build db-migrate-up  # Optional. Sequelize `sync` runs anyway
+docker compose build db-migrate-up  # Optional. Sequelize `sync` runs anyway
+docker compose start db-migrate-up
 ```
 
 Terminal 3:
