@@ -13,14 +13,14 @@ RUN mkdir -p /home/node/app/node_modules && \
 # Set the working directory inside the container
 WORKDIR /home/node/app
 
-RUN npx playwright install-deps --no-shell chromium 
+RUN npx playwright install-deps chromium 
 
 USER node
 
 COPY --chown=node:node . .
 
 RUN rm -rf node_modules && npm install && \
-    npx playwright install chromium
+    npx playwright install  --no-shell chromium
 
 # Expose the port your Node.js app will run on
 EXPOSE 3000
