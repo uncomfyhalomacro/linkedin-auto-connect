@@ -18,7 +18,10 @@ STORAGE_STATE_KEY="${key}"
 async function saveState() {
 	// Launch the browser in non-headless mode
 	const browser = await chromium.launch({ headless: false });
-	const context = await browser.newContext();
+	const context = await browser.newContext({
+		userAgent:
+			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15",
+	});
 	const page = await context.newPage();
 
 	console.log("Navigating to LinkedIn login page...");
