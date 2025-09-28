@@ -75,13 +75,15 @@ have the credentials for this database exposed in the compose file.
 Try running it locally. First you have to expose the database's port (`db` service) in the `docker-compose.yml` file e.g. `5432:5432` and
 restart the container. You can check that the port is exposed by checking with netcat e.g. `nc -vz localhost 5432`.
 
-Edit the `.env.database` file by pointing `PGHOST` to `localhost` or any host machine's `$HOSTNAME` or `$HOST`.
+Create a copy of `.env.database` e.g. `.env.database.troubleshoot`.
+
+Edit the copy by pointing `PGHOST` to `localhost` or any host machine's `$HOSTNAME` or `$HOST`.
 
 Run the following commands.
 
 ```bash
-source .env
-source .env.database
+export $(cat .env | xargs)
+export $(cat .env.database.troubleshoot | xargs)
 npm run start https://linkedin.com
 ```
 
@@ -89,8 +91,8 @@ If necessary e.g. your storage state has expired, you can do the following to re
 
 ```bash
 node src/runSaveState.ts
-source .env
-source .env.database
+export $(cat .env | xargs)
+export $(cat .env.database.troubleshoot | xargs)
 ```
 
 > [!IMPORTANT]
