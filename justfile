@@ -10,11 +10,19 @@ migrate-down:
     just migrations/down/all
 
 run-app *argument:
-    {{docker_cmd}} compose up app {{ argument }}
-
+    {{docker_cmd}} compose up {{ argument }} app
 
 down-app:
     {{docker_cmd}} compose down -v
 
 refresh-save-state:
     npm run saveState
+
+db-migrate-up:
+    {{docker_cmd}} compose up db-migrate-up
+
+db-migrate-down:
+    {{docker_cmd}} compose up db-migrate-down
+
+run-database *argument:
+    {{docker_cmd}} compose up {{ argument }} db
