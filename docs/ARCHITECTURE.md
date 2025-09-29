@@ -70,24 +70,32 @@ essential since we can always update the keys. They are only useful for logging.
 data):
 
 ```sql
-CREATE TABLE scraper_profiles (
-    id      UUID    PRIMARY KEY DEFAULT gen_random_uuid(),
-    secret     TEXT    NOT NULL
-    first_used  TIMESTAMP NOT NULL,
-    last_used   TIMESTAMP NOT NULL,
-    connections INT DEFAULT 0
-);
+CREATE TABLE
+    scraper_profiles (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        secret TEXT NOT NULL,
+        first_used TIMESTAMP NOT NULL,
+        last_used TIMESTAMP NOT NULL,
+        connections INT DEFAULT 0,
+        nonce INTEGER DEFAULT 0
+    );
 ```
 
 For links:
 
 ```sql
-CREATE TABLE profile_links (
-    id UUID         PRIMARY     KEY,
-    fetched_at      TIMESTAMP   NOT NULL,
-    updated_at      TIMESTAMP   NOT NULL,
-    memberIdUrl     TEXT        NOT NULL,
-    cleanProfileUrl TEXT        NOT NULL,  
-    name            TEXT        NOT NULL,         
-);
+CREATE TABLE
+    profile_links (
+        id UUID PRIMARY KEY,
+        fetched_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL,
+        member_id_url TEXT NOT NULL,
+        clean_url_profile TEXT NOT NULL,
+        name TEXT NOT NULL,
+        nonce INTEGER DEFAULT 0
+    );
 ```
+
+# Other features
+
+## Feed Collection
