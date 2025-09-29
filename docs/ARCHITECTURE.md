@@ -99,3 +99,40 @@ CREATE TABLE
 # Other features
 
 ## Feed Collection
+
+There is a table for feeds of the currently used scraper profile.
+
+```sql
+CREATE TABLE
+    feeds (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        fetched_at TIMESTAMP NOT NULL,
+        interacted_on TIMESTAMP NOT NULL,
+        nonce INTEGER DEFAULT 0
+    );
+```
+
+The collected data is used alongside the next feature that is mentioned below.
+
+## Interactivity
+
+The feed data is fetched from the `feeds` table. The page of the link will be interacted
+based on the contents of the data. However, this interactivity requires
+
+- feeding post data as input to an LLM (the model can vary)
+- LLM outputs text to be used as comment on a post
+
+To do this, a very well structured prompt is required so that the LLM is consistent on
+outputting the necessary responses from its trained data. The following details are as folows
+on how to create the prompt:
+
+- Persona: The LLM should mimic a persona based on the provided input. Take for example,
+if the post is about fintech, therefore, the LLM should mimic a financial analyst persona.
+- Personality: The LLM should mimic a personality and behavior based on the tone of a post. However,
+the LLM should be instructed to do at least one main personality e.g. cheerful and energetic.
+- Adaptability: The LLM should adapt based on the content of a post. For example,
+if a post talks about layoffs, then the LLM should focus more on the optimistic side rather than
+on the pessimistic side of the responses. However, it's better to not be 100% on the optimistic
+side to ensure "authenticity" of the responses.
+- Goals: The LLM should be instructed to perform appropriate responses and focus on gaining more
+connections.
