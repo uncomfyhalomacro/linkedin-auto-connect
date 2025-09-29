@@ -123,7 +123,7 @@ based on the contents of the data. However, this interactivity requires
 - LLM outputs text to be used as comment on a post
 
 To do this, a very well structured prompt is required so that the LLM is consistent on
-outputting the necessary responses from its trained data. The following details are as folows
+outputting the necessary responses from its trained data. The following details are as follows
 on how to create the prompt:
 
 - Persona: The LLM should mimic a persona based on the provided input. Take for example,
