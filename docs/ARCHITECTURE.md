@@ -136,3 +136,9 @@ on the pessimistic side of the responses. However, it's better to not be 100% on
 side to ensure "authenticity" of the responses.
 - Goals: The LLM should be instructed to perform appropriate responses and focus on gaining more
 connections.
+
+A well structured schema is used to store these responses to be used for
+
+- training a model
+- provide more clearer and desired responses
+
