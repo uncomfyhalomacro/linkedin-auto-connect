@@ -74,8 +74,8 @@ async function findAndConnectProfileLinks(
 				const profileLink = await ProfileLinks.findOne({
 					where: {
 						[Op.or]: {
-							memberIdUrl: filteredUrl,
-							cleanProfileUrl: filteredUrl,
+							member_id_url: filteredUrl,
+							clean_profile_url: filteredUrl,
 						},
 					},
 				});
@@ -84,6 +84,7 @@ async function findAndConnectProfileLinks(
 					console.log(`Skipping profile URL: ${filteredUrl}`);
 					continue; // Skip sending invite to profile passed from sendInvite
 				}
+				
 				console.log(`${index + 1}: Processing ${filteredUrl}`);
 				const { success } = await sendInvite(filteredUrl, page);
 

@@ -125,17 +125,16 @@ async function sendInvite(url: string, page: Page) {
 		if (successInvite) {
 			invitationStatus = "sent";
 			console.log(`✅ Invite sent${who ? ` to ${who}` : ""}.`);
-			// TODO: Save to database link and name.
 		}
 
 		let profileLink = await ProfileLinks.findOne({
-			where: { memberIdUrl: memberIdUrl },
+			where: { member_id_url: memberIdUrl },
 		});
 
 		if (!profileLink) {
 			profileLink = await ProfileLinks.create({
-				memberIdUrl: memberIdUrl,
-				cleanProfileUrl: cleanProfileUrl,
+				member_id_url: memberIdUrl,
+				clean_profile_url: cleanProfileUrl,
 				name: who,
 			});
 			console.log("✅ Link added to database");

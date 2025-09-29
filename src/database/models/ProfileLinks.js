@@ -10,12 +10,12 @@ ProfileLinks.init(
 			primaryKey: true,
 			defaultValue: DataTypes.UUIDV4, // This performs an auto generation of the UUIDs
 		},
-		memberIdUrl: {
+		member_id_url: {
 			type: DataTypes.TEXT,
 			allowNull: false,
 			unique: true,
 		},
-		cleanProfileUrl: {
+		clean_profile_url: {
 			type: DataTypes.TEXT,
 			allowNull: false,
 			unique: true,
@@ -24,10 +24,20 @@ ProfileLinks.init(
 			type: DataTypes.TEXT,
 			allowNull: true,
 		},
+		connected: {
+			types: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
+		pending: {
+			types: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
         nonce: {
             type: DataTypes.INTEGER,
             defaultValue: 0
-        }
+        },
 	},
 	{
 		sequelize: sq,
