@@ -20,7 +20,7 @@ Using [playwright](https://playwright.dev), we open a headless page and authenti
 4. Expose data with a GraphQL API
 
 ```mermaid
-graph TD
+graph LR
     subgraph "Scraping & Invitation"
         A["fa:fa-play-circle Start Playwright Script"] --> B{"Open Headless Page"};
         B -- "Uses" --> C["fa:fa-key Encrypted Credentials & Secret"];
