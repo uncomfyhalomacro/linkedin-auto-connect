@@ -15,6 +15,6 @@ interface StorageState {
 	}>;
 }
 
-type InvitationStatus = "pending" | "sent" | "fail";
+type InvitationStatus = "pending" | "sent" | "fail" | "connected";
 
 export type { StorageState, InvitationStatus };
