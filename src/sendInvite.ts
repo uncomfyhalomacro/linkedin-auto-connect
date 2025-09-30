@@ -45,9 +45,13 @@ async function sendInvite(url: string, page: Page) {
 				const overlay = page
 					.locator('[role="menu"], .artdeco-dropdown__content, [role="dialog"]')
 					.first();
+				await overlay.waitFor({ state: "visible", timeout: 3000 });
 				clicked = await clickFirstVisible([
 					overlay.getByRole("menuitem", { name: CONNECT }).first(),
-					overlay.getByRole("button", { name: /^Invite .* to connect$/i }).first(),
+					overlay
+						.getByRole("button", { name: /^Invite .* to connect$/i })
+						.first(),
+					overlay.getByRole("button", { name: /Invite/i }).first(),
 					overlay.locator(`:text-matches("${CONNECT.source}")`).first(),
 				]);
 			}
@@ -70,11 +74,11 @@ async function sendInvite(url: string, page: Page) {
 		}
 
 		// 4) If still nothing, only now check if it’s actually pending
-
 		if (!clicked) {
 			const isPending = await page
 				.getByRole("main")
-				.getByRole("button", { name: PENDING })
+				.getByRole("button")
+				.getByLabel(PENDING)
 				.first()
 				.isVisible()
 				.catch(() => false);
@@ -82,6 +86,19 @@ async function sendInvite(url: string, page: Page) {
 				console.log("ℹ️ Invitation already pending.");
 				invitationStatus = "pending";
 				console.log("Checking profile connections...");
+			}
+			// Or check if connected already
+			const isConnected = await page
+				.getByRole("main")
+				.getByRole("button")
+				.getByLabel(/Remove your connection to/i)
+				.first()
+				.isVisible()
+				.catch(() => false);
+
+			if (isConnected) {
+				console.log("❤️ Already connected to profile.");
+				invitationStatus = "connected";
 			}
 
 			// Debug: print accessible names of header buttons
@@ -139,7 +156,7 @@ async function sendInvite(url: string, page: Page) {
 			});
 			console.log("✅ Link added to database");
 		} else {
-			await profileLink.increment("nonce", { by: 1 });
+			await profileLink.update({ last_fetched_on: new Date() });
 			console.log("✅ Link updated in database");
 		}
 
@@ -149,6 +166,28 @@ async function sendInvite(url: string, page: Page) {
 			.catch((err) => {
 				console.log(err);
 			});
+		let result: { status: InvitationStatus; success: boolean; fail: boolean };
+
+		switch (invitationStatus) {
+			case "sent":
+				result = { status: invitationStatus, success: true, fail: false };
+				await profileLink.update({
+					connected: false,
+					pending: invitationStatus === "sent",
+				});
+				break; // Stops execution from continuing to the next case
+			case "connected":
+				result = { status: invitationStatus, success: true, fail: false };
+				await profileLink.update({
+					connected: true,
+					pending: false,
+				});
+				break;
+			default: // 'pending' and 'default' have the same outcome, so they can be grouped
+				result = { status: invitationStatus, success: false, fail: true };
+				break;
+		}
+		return result;
 	} catch (err) {
 		console.error("❌ Error in sendInvite:", err);
 		await generateDebugInfoPng(page).catch((err) => {
@@ -159,17 +198,6 @@ async function sendInvite(url: string, page: Page) {
 		);
 		return { status: invitationStatus, success: false, fail: true };
 	}
-	let result: { status: InvitationStatus; success: boolean; fail: boolean };
-
-	switch (invitationStatus) {
-		case "sent":
-			result = { status: invitationStatus, success: true, fail: false };
-			break; // Stops execution from continuing to the next case
-		default: // 'pending' and 'default' have the same outcome, so they can be grouped
-			result = { status: invitationStatus, success: false, fail: true };
-			break;
-	}
-	return result;
 }
 
 export default sendInvite;
