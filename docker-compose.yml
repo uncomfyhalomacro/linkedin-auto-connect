@@ -27,7 +27,32 @@ services:
       # Don't overwrite the .cache directory that contains the playwright dependencies
       - /home/node/.cache
       - playwright_cache:/home/node/.cache/ms-playwright
-    command: npm start "https://www.linkedin.com/search/results/people"
+    command: sh -c 'sleep 4s && npm run start "https://www.linkedin.com/in/famiwole-adetokunbo-305075150"'
+
+  feeds:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.app
+    ports:
+      - "3000:3000" # Map host port 3000 to container port 3000
+    env_file:
+      - .env
+      - .env.database
+    environment:
+      - PLAYWRIGHT_SKIP_BROWSER_GC=1
+      - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+    working_dir: /home/node/app
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/home/node/app
+      # Don't overwrite the node_modules folder in the container
+      - /home/node/app/node_modules
+      # Don't overwrite the .cache directory that contains the playwright dependencies
+      - /home/node/.cache
+      - playwright_cache:/home/node/.cache/ms-playwright
+    command: sh -c 'sleep 4s && npm run feeds'
 
   # The PostgreSQL database service
   db:
