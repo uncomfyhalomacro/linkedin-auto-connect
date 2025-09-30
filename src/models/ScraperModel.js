@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import { sq } from "../init.js";
+import { sq } from "../db/init.js";
 
 class ScraperModel extends Model {}
 ScraperModel.init(

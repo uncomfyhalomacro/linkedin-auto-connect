@@ -7,7 +7,7 @@ import { sq } from "./db/init.js";
 import { decryptJson } from "./encryption.ts";
 import findAndConnectProfileLinks from "./findAndConnectProfileLinks.ts";
 import initialiseBrowser from "./initialiseBrowser.ts";
-import ScraperModel from "./models/ScraperModel.ts";
+import ScraperModel from "./models/ScraperModel.js";
 import sendInvite from "./sendInvite.ts";
 
 // CLI
