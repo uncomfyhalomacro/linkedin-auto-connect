@@ -63,4 +63,5 @@ migrate-down:
 
 # Misc
 delete-image-logs:
-    rm -v playwrightDebugLogs || true
+    rm -v ./debug-logs || true
+    rm -v ./feeds-debug-logs || true
