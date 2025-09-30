@@ -178,14 +178,21 @@ async function sendInvite(url: string, page: Page) {
 					pending: invitationStatus === "sent",
 				});
 				break; // Stops execution from continuing to the next case
+			case 'pending':
+				result = { status: invitationStatus, success: true, fail: false };
+				await profileLink.update({
+					connected: false,
+					pending: invitationStatus === "pending",
+				});
+				break; // Stops execution from continuing to the next case
 			case "connected":
 				result = { status: invitationStatus, success: true, fail: false };
 				await profileLink.update({
-					connected: true,
+					connected: invitationStatus === "connected",
 					pending: false,
 				});
 				break;
-			default: // 'pending' and 'default' have the same outcome, so they can be grouped
+			default:
 				result = { status: invitationStatus, success: false, fail: true };
 				break;
 		}
