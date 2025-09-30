@@ -48,10 +48,10 @@ async function sendInvite(url: string, page: Page) {
 				await overlay.waitFor({ state: "attached", timeout: 3000 });
 				clicked = await clickFirstVisible([
 					overlay.getByRole("menuitem", { name: CONNECT }).first(),
-					overlay
+					page.getByRole("main")
 						.getByRole("button", { name: /^Invite .* to connect$/i })
 						.first(),
-					overlay.getByRole("button", { name: /Invite/i }).first(),
+					page.getByRole("main").getByRole("button", { name: /Invite/i }).first(),
 					overlay.locator(`:text-matches("${CONNECT.source}")`).first(),
 				]);
 			}
