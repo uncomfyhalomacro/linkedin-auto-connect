@@ -45,7 +45,7 @@ async function sendInvite(url: string, page: Page) {
 				const overlay = page
 					.locator('[role="menu"], .artdeco-dropdown__content, [role="dialog"]')
 					.first();
-				await overlay.waitFor({ state: "visible", timeout: 3000 });
+				await overlay.waitFor({ state: "attached", timeout: 3000 });
 				clicked = await clickFirstVisible([
 					overlay.getByRole("menuitem", { name: CONNECT }).first(),
 					overlay
@@ -70,10 +70,24 @@ async function sendInvite(url: string, page: Page) {
 					page.getByRole("main").getByRole("button", { name: re1 }).first(),
 					page.getByRole("main").getByRole("button", { name: re2 }).first(),
 				]);
+
+				// Or check if connected already
+				const isConnected = await page
+					.getByRole("main")
+					.getByRole("button")
+					.getByLabel(/Remove your connection to/i)
+					.first()
+					.isVisible()
+					.catch(() => false);
+
+				if (isConnected) {
+					console.log("❤️ Already connected to profile.");
+					invitationStatus = "connected";
+				}
 			}
 		}
 
-		// 4) If still nothing, only now check if it’s actually pending
+		// If still nothing, only now check if it’s actually pending
 		if (!clicked) {
 			const isPending = await page
 				.getByRole("main")
@@ -83,24 +97,12 @@ async function sendInvite(url: string, page: Page) {
 				.isVisible()
 				.catch(() => false);
 			if (isPending) {
-				console.log("ℹ️ Invitation already pending.");
-				invitationStatus = "pending";
-				console.log("Checking profile connections...");
+				if (invitationStatus !== "connected") {
+					console.log("ℹ️ Invitation already pending.");
+					invitationStatus = "pending";
+					console.log("Checking profile connections...");
+				}
 			}
-			// Or check if connected already
-			const isConnected = await page
-				.getByRole("main")
-				.getByRole("button")
-				.getByLabel(/Remove your connection to/i)
-				.first()
-				.isVisible()
-				.catch(() => false);
-
-			if (isConnected) {
-				console.log("❤️ Already connected to profile.");
-				invitationStatus = "connected";
-			}
-
 			// Debug: print accessible names of header buttons
 			const mainEl = await page.$("main");
 			const acc = mainEl
