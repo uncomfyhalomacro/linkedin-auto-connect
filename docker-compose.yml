@@ -27,7 +27,7 @@ services:
       # Don't overwrite the .cache directory that contains the playwright dependencies
       - /home/node/.cache
       - playwright_cache:/home/node/.cache/ms-playwright
-    command: sh -c 'sleep 4s && npm run start "https://www.linkedin.com/in/famiwole-adetokunbo-305075150"'
+    command: sh -c 'sleep 4s && npm run start "https://www.linkedin.com/search/results/people"'
 
   feeds:
     build:
