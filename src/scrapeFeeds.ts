@@ -1,63 +1,99 @@
 import type { Page } from "playwright";
+import { clickFirstVisible } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import Feeds from "./models/Feeds.js";
 
+const genfeedDebugLogs = async (p: Page) => {
+	await generateDebugInfoPng(p, "feeds-debug-logs");
+};
 const scrapeFeeds = async (page: Page) => {
 	console.log("✅ Scraping LinkedIn feed for scraper profile.");
 	const feedUrl = "https://www.linkedin.com/";
+	const controlMenuRegex = /^Open control menu for post by /i;
 
 	await page
 		.goto(feedUrl, { waitUntil: "domcontentloaded", timeout: 10000 })
 		.catch(async (err) => {
-			await generateDebugInfoPng(page, "feeds-debug-logs");
-			throw new Error(err);
+			await genfeedDebugLogs(page);
+			// throw new Error(err);
+			return;
 		});
 
+	const h1 = page.getByRole("main").getByRole("heading", { level: 1 }).first();
+	await h1.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
+	await page.waitForLoadState("networkidle").catch(() => {});
+
 	const postLocators = await page
-		.locator('div[data-id="urn:li:activity:"]')
+		.getByRole("article")
+		// .locator('div[data-id*="urn:li:activity"]')
 		.all();
 
+	if (postLocators.length === 0) {
+		const err = "‼️ No post data found!";
+		console.log(err);
+		// throw new Error(err);
+		return;
+	}
+
+	console.log("✅ Found articles: ", postLocators.length);
+
 	for (const postLocator of postLocators) {
-		const content = postLocator.contentFrame();
-		const connectButton = await content
-			.getByRole("button")
-			.first()
-			.getByLabel(/Open control menu for post by/);
-		if (await connectButton.isVisible().catch(() => false)) {
-			await connectButton.click();
-			const overlay = content.locator('button[aria-expanded="true"]').first();
-			overlay
-				.getByRole("heading", { name: "Copy link to post" })
-				.first()
-				.click();
-			const getAlertFrame = page
-				.locator("section")
-				.getByLabel(/Toast message/)
-				.first()
-				.contentFrame();
-			const postLink = getAlertFrame.getByRole("link").first();
-			const postUrl = await postLink.getAttribute("href");
-			if (!postUrl) {
-				console.error("‼️ Failed to get post url");
-				continue;
-			}
-			console.log(`✅ Found post url: ${postUrl}`);
+		const controlMenuButton = postLocator
+			.getByRole("button", { name: controlMenuRegex })
+			.first();
 
-			const postFeedItem = await Feeds.findOne({
-				where: { post_url: postUrl },
-			});
+		// const controlMenuButton = buttons.getByLabel(controlMenuRegex).first()
+		if (await clickFirstVisible([controlMenuButton])) {
+			console.log("Clicked the control menu button");
+			const overlay = postLocator.getByLabel("Control Menu Options").first();
+			await overlay.waitFor({ timeout: 5000, state: "visible" });
+			const h5Button = await overlay
+				.getByRole("button", { name: "Copy link to post" })
+				.first();
 
-			if (!postFeedItem) {
-				await Feeds.create({ post_url: postUrl }).catch((err) => {
-					console.error(err);
+			const isClicked = await clickFirstVisible([h5Button]);
+
+			if (isClicked) {
+				console.log(`✅ Button found successfully`);
+				await genfeedDebugLogs(page);
+				const alertDialogBelow = page.getByLabel(/Toast message/i).first();
+				const postLink = alertDialogBelow
+					.getByRole("link", { name: "View post" })
+					.first();
+				const postUrl = await postLink.getAttribute("href");
+				if (!postUrl) {
+					console.error("‼️ Failed to get post url");
+					continue;
+				}
+
+				console.log(`✅ Found post url: ${postUrl}`);
+				console.log("Removing tracking and URL paths")
+
+				const urlWith = new URL(postUrl)
+				const cleanPostUrl = urlWith.origin + urlWith.pathname
+
+				console.log(`✅ Cleaned Post URL: ${cleanPostUrl}`)
+
+				const postFeedItem = await Feeds.findOne({
+					where: { post_url: cleanPostUrl },
 				});
-				console.log(`✅ Added post to database...`);
+
+				if (!postFeedItem) {
+					await Feeds.create({ post_url: cleanPostUrl, fetched_at: new Date(), interacted_on: new Date() }).catch((err) => {
+						console.error(err);
+					});
+					console.log(`✅ Added post to database...`);
+				} else {
+					console.log("✅ Found! Has been interacted again: ", cleanPostUrl);
+					await postFeedItem.increment("nonce", { by: 1 }).catch((err) => {
+						console.error(err);
+					});
+					await postFeedItem.update({ interacted_on: new Date() })
+					console.log(`✅ Updated post to database...`);
+				}
 			} else {
-				console.log("✅ Found! Has been interacted again: ", postUrl);
-				await postFeedItem.increment("nonce", { by: 1 }).catch((err) => {
-					console.error(err);
-				});
-				console.log(`✅ Updated post to database...`);
+				console.error("‼️ Not able to find any post links");
+				await genfeedDebugLogs(page);
 			}
 		}
 	}
