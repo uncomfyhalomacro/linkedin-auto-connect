@@ -13,12 +13,10 @@ async function getHashFormOfLink(page: Page, url: string) {
 	// 2. Locate the link
 	const profileLinkLocator = page.locator(
 		'a[href*="/in/"][href*="miniProfileUrn="]',
-	);
+	).first()
 
 	// 2. Get the full href attribute as a string
 	const href = await profileLinkLocator
-		.getByRole("link")
-		.first()
 		.getAttribute("href")
 		.catch(async (err) => {
 			console.error(err);
