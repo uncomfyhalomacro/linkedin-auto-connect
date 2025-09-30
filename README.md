@@ -13,9 +13,10 @@ If you want to use and ensure that the project is working universally, you can u
 > Instructions on how to install `docker` or `podman` will not be provided.
 > For `just`, follow install instructions from <https://just.systems/man/en/>
 
-You can run directly this command
+You can run directly these commands
 
 ```bash
+just refresh-save-state  # Ensure that you have created a new save state
 just setup
 just start
 ```
