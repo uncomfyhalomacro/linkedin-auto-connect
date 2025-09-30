@@ -85,7 +85,7 @@ services:
       - ./migrations:/usr/src/scripts/migrations
     env_file:
       - .env.database
-    command: just --timestamp migrate-up
+    command: sh -c 'sleep 4s && just --timestamp migrate-up'
 
   db-migrate-down:
     build:
