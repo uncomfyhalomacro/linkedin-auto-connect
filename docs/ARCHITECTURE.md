@@ -70,14 +70,13 @@ essential since we can always update the keys. They are only useful for logging.
 data):
 
 ```sql
-CREATE TABLE
+CCREATE TABLE
     scraper_profiles (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
         secret TEXT NOT NULL,
-        first_used TIMESTAMP NOT NULL,
-        last_used TIMESTAMP NOT NULL,
-        connections INT DEFAULT 0,
-        nonce INTEGER DEFAULT 0
+        first_used TIMESTAMP NOT NULL DEFAULT CURRENT_DATE,
+        last_used TIMESTAMP NOT NULL DEFAULT CURRENT_DATE,
+        connections INT DEFAULT 0
     );
 ```
 
@@ -87,14 +86,13 @@ For links:
 CREATE TABLE
     profile_links (
         id UUID PRIMARY KEY,
-        fetched_at TIMESTAMP NOT NULL,
-        updated_at TIMESTAMP NOT NULL,
+        first_fetched_on TIMESTAMP NOT NULL DEFAULT CURRENT_DATE,
+        last_fetched_on TIMESTAMP NOT NULL DEFAULT CURRENT_DATE,
         member_id_url TEXT NOT NULL,
         clean_profile_url TEXT NOT NULL,
         connected BOOLEAN DEFAULT false,
         pending BOOLEAN DEFAULT false,
-        name TEXT NOT NULL,
-        nonce INTEGER DEFAULT 0
+        name TEXT NOT NULL
     );
 ```
 
@@ -105,14 +103,14 @@ CREATE TABLE
 There is a table for feeds of the currently used scraper profile.
 
 ```sql
-CREATE TABLE
+CCREATE TABLE
     feeds (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-        post_url TEXT,
-        fetched_on TIMESTAMP NOT NULL,
-        interacted_on TIMESTAMP NOT NULL,
-        nonce INTEGER DEFAULT 0,
-        UNIQUE(post_url)
+        post_url TEXT NOT NULL,
+        first_fetched_on TIMESTAMP NOT NULL DEFAULT CURRENT_DATE,
+        last_interacted_on TIMESTAMP NOT NULL DEFAULT CURRENT_DATE,
+        note TEXT,
+        UNIQUE (post_url)
     );
 ```
 

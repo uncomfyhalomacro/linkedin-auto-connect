@@ -34,17 +34,21 @@ ProfileLinks.init(
 			allowNull: false,
 			defaultValue: false,
 		},
-		nonce: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
+		first_fetched_on: {
+			type: DataTypes.DATE,
+			allowNull: false,
+			defaultValue: new Date()
+		},
+		last_fetched_on: {
+			type: DataTypes.DATE,
+			allowNull: false,
+			defaultValue: new Date()
 		},
 	},
 	{
 		sequelize: sq,
 		modelName: "profile_links",
-		timestamps: true,
-		createdAt: "fetched_at",
-		updatedAt: "updated_at",
+		timestamps: false,
 	},
 );
 

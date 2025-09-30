@@ -17,17 +17,21 @@ ScraperModel.init(
 			type: DataTypes.INTEGER,
 			defaultValue: 0,
 		},
-		nonce: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
+		first_used: {
+			type: DataTypes.DATE,
+			defaultValue: new Date(),
+			allowNull: false,
+		},
+		last_used: {
+			type: DataTypes.DATE,
+			defaultValue: new Date(),
+			allowNull: false,
 		},
 	},
 	{
 		sequelize: sq,
 		modelName: "scraper_profiles",
-		timestamps: true,
-		createdAt: "first_used",
-		updatedAt: "last_used",
+		timestamps: false
 	},
 );
 

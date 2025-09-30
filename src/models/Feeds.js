@@ -15,19 +15,19 @@ Feeds.init(
 			allowNull: false,
 			unique: true,
 		},
-		fetched_on: {
+		first_fetched_on: {
 			type: DataTypes.DATE,
 			allowNull: false,
 			defaultValue: new Date(),
 		},
-		interacted_on: {
+		last_interacted_on: {
 			type: DataTypes.DATE,
 			allowNull: false,
 			defaultValue: new Date(),
 		},
-		nonce: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
+		note: {
+			allowNull: true,
+			type: DataTypes.TEXT,
 		},
 	},
 	{
