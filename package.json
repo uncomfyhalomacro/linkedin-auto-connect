@@ -14,6 +14,8 @@
 		"tsc": "tsc --noEmit",
 		"lint": "npx biome check",
 		"start": "node src/index.ts",
+		"profiles": "node src/runScrapeAndConnectProfiles.ts",
+		"feeds": "node src/runScrapeFeeds.ts",
 		"saveState": "node src/runSaveState.ts"
 	},
 	"keywords": [],
