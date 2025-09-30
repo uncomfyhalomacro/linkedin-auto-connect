@@ -47,14 +47,14 @@ async function sendInvite(url: string, page: Page) {
 					.first();
 				clicked = await clickFirstVisible([
 					overlay.getByRole("menuitem", { name: CONNECT }).first(),
-					overlay.getByRole("button", { name: /Invite/ }).first(),
+					overlay.getByRole("button", { name: /^Invite .* to connect$/i }).first(),
 					overlay.locator(`:text-matches("${CONNECT.source}")`).first(),
 				]);
 			}
 		}
 
 		// 3) Rare fallback: “Invite <name> to connect”
-		if (!clicked) {
+		if (clicked) {
 			const name = (await h1.innerText().catch(() => "")).trim();
 			if (name) {
 				const re1 = new RegExp(
