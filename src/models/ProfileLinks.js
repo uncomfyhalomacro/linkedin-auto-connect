@@ -1,5 +1,5 @@
 import { DataTypes, Model } from "sequelize";
-import { sq } from "../init.js";
+import { sq } from "../db/init.js";
 
 class ProfileLinks extends Model {}
 
@@ -25,12 +25,12 @@ ProfileLinks.init(
 			allowNull: true,
 		},
 		connected: {
-			types: DataTypes.BOOLEAN,
+			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: false
 		},
 		pending: {
-			types: DataTypes.BOOLEAN,
+			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: false
 		},
