@@ -1,11 +1,11 @@
 import type { Page } from "playwright";
 import { clickFirstVisible, escRe, getHashFormOfLink } from "./common.ts";
-import ProfileLinks from "./database/models/ProfileLinks.js";
 import { generateDebugInfoPng } from "./debugErrors.ts";
+import ProfileLinks from "./models/ProfileLinks.js";
 import type { InvitationStatus } from "./types.ts";
 
 async function sendInvite(url: string, page: Page) {
-	const { memberIdUrl, cleanProfileUrl } = await getHashFormOfLink(page, url)
+	const { memberIdUrl, cleanProfileUrl } = await getHashFormOfLink(page, url);
 	// i18n label patterns
 	const CONNECT =
 		/(Connect|Vernetzen|Se connecter|Conectar|Collegati|Conectar-se)/i;
@@ -139,7 +139,7 @@ async function sendInvite(url: string, page: Page) {
 			});
 			console.log("✅ Link added to database");
 		} else {
-			await profileLink.increment("nonce", { by: 1 })
+			await profileLink.increment("nonce", { by: 1 });
 			console.log("✅ Link updated in database");
 		}
 

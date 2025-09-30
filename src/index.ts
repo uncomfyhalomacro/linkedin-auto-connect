@@ -3,11 +3,11 @@
 import path from "node:path";
 import { loadEnvFile } from "node:process";
 import checkConnections from "./checkConnections.ts";
-import { sq } from "./database/init.js";
-import ScraperModel from "./database/models/ScraperModel.js";
+import { sq } from "./db/init.js";
 import { decryptJson } from "./encryption.ts";
 import findAndConnectProfileLinks from "./findAndConnectProfileLinks.ts";
 import initialiseBrowser from "./initialiseBrowser.ts";
+import ScraperModel from "./models/ScraperModel.ts";
 import sendInvite from "./sendInvite.ts";
 
 // CLI

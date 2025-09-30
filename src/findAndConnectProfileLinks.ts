@@ -1,9 +1,9 @@
 // findProfileLinks.ts
 import type { Page } from "playwright";
 import { Op } from "sequelize";
-import ProfileLinks from "./database/models/ProfileLinks.js";
-import type ScraperModel from "./database/models/ScraperModel.js";
 import { generateDebugInfoPng } from "./debugErrors.ts";
+import ProfileLinks from "./models/ProfileLinks.js";
+import type ScraperModel from "./models/ScraperModel.js";
 import sendInvite from "./sendInvite.ts";
 
 function sleep(ms: number): Promise<void> {
@@ -84,7 +84,7 @@ async function findAndConnectProfileLinks(
 					console.log(`Skipping profile URL: ${filteredUrl}`);
 					continue; // Skip sending invite to profile passed from sendInvite
 				}
-				
+
 				console.log(`${index + 1}: Processing ${filteredUrl}`);
 				const { success } = await sendInvite(filteredUrl, page);
 
