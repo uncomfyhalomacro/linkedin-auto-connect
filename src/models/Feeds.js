@@ -32,7 +32,7 @@ Feeds.init(
 	},
 	{
 		sequelize: sq,
-		modelName: "profile_links",
+		modelName: "feeds",
 		timestamps: false,
 	},
 );
