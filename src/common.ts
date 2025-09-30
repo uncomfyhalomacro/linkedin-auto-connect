@@ -17,7 +17,8 @@ async function getHashFormOfLink(page: Page, url: string) {
 
 	// 2. Get the full href attribute as a string
 	const href = await profileLinkLocator
-		.getByRole("link").first()
+		.getByRole("link")
+		.first()
 		.getAttribute("href")
 		.catch(async (err) => {
 			console.error(err);

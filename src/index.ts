@@ -73,5 +73,5 @@ import sendInvite from "./sendInvite.ts";
 		await scraperProfile.increment("nonce", { by: 1 });
 	};
 
-	await Promise.all([connectScraper, scrapeFeeds(ctx)])
+	await Promise.all([connectScraper, scrapeFeeds(ctx)]);
 })();

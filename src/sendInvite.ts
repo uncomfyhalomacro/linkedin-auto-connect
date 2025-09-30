@@ -39,7 +39,7 @@ async function sendInvite(url: string, page: Page) {
 			const moreBtn = page
 				.getByRole("main")
 				.getByRole("button", { name: MORE })
-				.first()
+				.first();
 			if (await moreBtn.isVisible().catch(() => false)) {
 				await moreBtn.click();
 				const overlay = page

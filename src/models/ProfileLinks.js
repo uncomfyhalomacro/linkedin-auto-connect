@@ -27,17 +27,17 @@ ProfileLinks.init(
 		connected: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
-			defaultValue: false
+			defaultValue: false,
 		},
 		pending: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
-			defaultValue: false
+			defaultValue: false,
 		},
-        nonce: {
-            type: DataTypes.INTEGER,
-            defaultValue: 0
-        },
+		nonce: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0,
+		},
 	},
 	{
 		sequelize: sq,
