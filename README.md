@@ -16,7 +16,8 @@ If you want to use and ensure that the project is working universally, you can u
 You can run directly these commands
 
 ```bash
-just refresh-save-state  # Ensure that you have created a new save state
+# Ensure that you have created a new save state
+just refresh-save-state
 just setup
 just start
 ```
