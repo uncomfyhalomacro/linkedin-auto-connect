@@ -37,9 +37,9 @@ import scrapeAndConnectProfiles from "./scrapeAndConnectProfiles.ts";
 		process.exit(1);
 	}
 
-	const page = await ctx.newPage()
-	await scrapeAndConnectProfiles(page, secret, url)
+	const page = await ctx.newPage();
+	await scrapeAndConnectProfiles(page, secret, url);
 
-	await ctx.close()
-	await browser.close()
+	await ctx.close();
+	await browser.close();
 })();

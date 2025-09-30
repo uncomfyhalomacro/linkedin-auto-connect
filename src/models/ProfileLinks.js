@@ -37,12 +37,12 @@ ProfileLinks.init(
 		first_fetched_on: {
 			type: DataTypes.DATE,
 			allowNull: false,
-			defaultValue: new Date()
+			defaultValue: new Date(),
 		},
 		last_fetched_on: {
 			type: DataTypes.DATE,
 			allowNull: false,
-			defaultValue: new Date()
+			defaultValue: new Date(),
 		},
 	},
 	{

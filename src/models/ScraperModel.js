@@ -31,7 +31,7 @@ ScraperModel.init(
 	{
 		sequelize: sq,
 		modelName: "scraper_profiles",
-		timestamps: false
+		timestamps: false,
 	},
 );
 
