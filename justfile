@@ -57,3 +57,7 @@ migrate-up:
 
 migrate-down:
     just migrations/down/all
+
+# Misc
+delete-image-logs:
+    rm -v playwrightDebugLogs || true
