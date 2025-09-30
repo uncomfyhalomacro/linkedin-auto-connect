@@ -16,42 +16,8 @@ If you want to use and ensure that the project is working universally, you can u
 You can run directly this command
 
 ```bash
-just run-app --build  # pass --no-cache --force-recreate to recreate the container
-```
-
-Or you can run each service in this order:
-
-**Dev mode**
-
-Terminal 1:
-
-```bash
-docker compose up --build db  # Wait until the service is up
-```
-
-Terminal 2:
-
-You can run this command if you want to restart the database from scratch
-
-```bash
-docker compose build db-migrate-down
-docker compose run db-migrate-down
-```
-
-Otherwise:
-
-```bash
-docker compose build db-migrate-up  # Optional. Sequelize `sync` runs anyway
-docker compose run db-migrate-up
-```
-
-Terminal 3:
-
-This might restart the db service. You can check the logs and look for the string `linkedin-auto_db_<n>` where n is a number.
-
-```bash
-docker compose build app
-docker compose run app
+just setup
+just start
 ```
 
 To manipulate the database, you can head inside the container.
@@ -75,6 +41,8 @@ psql postgres://devuser:devpassword@db:5432/devdb
 > [!WARNING]
 > For now, this file is in non-production use. It's not advisable to
 have the credentials for this database exposed in the compose file.
+
+See [./justfile](./justfile) to read the order of commands to run the app.
 
 
 # TROUBLESHOOTING
