@@ -63,5 +63,5 @@ migrate-down:
 
 # Misc
 delete-image-logs:
-    rm -v ./debug-logs || true
-    rm -v ./feeds-debug-logs || true
+    rm -rv ./debug-logs || true
+    rm -rv ./feeds-debug-logs || true
