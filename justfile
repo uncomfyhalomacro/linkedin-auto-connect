@@ -26,3 +26,6 @@ db-migrate-down:
 
 run-database *argument:
     {{docker_cmd}} compose up {{ argument }} db
+
+purge-all-containers:
+    docker rm -v $(docker ps --filter status=exited -q)
