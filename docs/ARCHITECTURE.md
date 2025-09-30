@@ -111,7 +111,8 @@ CREATE TABLE
         post_url TEXT,
         fetched_at TIMESTAMP NOT NULL,
         interacted_on TIMESTAMP NOT NULL,
-        nonce INTEGER DEFAULT 0
+        nonce INTEGER DEFAULT 0,
+        UNIQUE(post_url)
     );
 ```
 
