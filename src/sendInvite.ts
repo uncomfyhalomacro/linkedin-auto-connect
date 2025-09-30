@@ -74,8 +74,7 @@ async function sendInvite(url: string, page: Page) {
 				// Or check if connected already
 				const isConnected = await page
 					.getByRole("main")
-					.getByRole("button")
-					.getByLabel(/Remove your connection to/i)
+					.getByRole("button", { name: /Remove your connection to/i })
 					.first()
 					.isVisible()
 					.catch(() => false);
@@ -90,8 +89,7 @@ async function sendInvite(url: string, page: Page) {
 		// If still nothing, only now check if it’s actually pending
 		const isPending = await page
 			.getByRole("main")
-			.getByRole("button")
-			.getByLabel(PENDING)
+			.getByRole("button", { name: PENDING })
 			.first()
 			.isVisible()
 			.catch(() => false);
