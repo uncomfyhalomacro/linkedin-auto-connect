@@ -3,7 +3,7 @@ import type { BrowserContext, Page } from "playwright";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 
 // Main logic is wrapped in an async function
-async function checkConnections(page: Page, _ctx: BrowserContext) {
+async function checkConnections(page: Page) {
 	try {
 		// This is the action that triggers the navigation
 		try {

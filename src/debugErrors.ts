@@ -2,10 +2,10 @@ import { existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import type { Page } from "playwright";
 
-const generateDebugInfoPng = async (page: Page) => {
+const generateDebugInfoPng = async (page: Page, customDir = "debug-logs") => {
 	const projectRootDir = path.dirname(process.argv0);
 	const dateFileNameFormat = Date.now().toString();
-	const debugOutDir = path.join(projectRootDir, "playwrightDebugLogs");
+	const debugOutDir = path.join(projectRootDir, customDir);
 
 	if (!existsSync(debugOutDir)) {
 		mkdirSync(debugOutDir, { recursive: true });

@@ -1,17 +1,16 @@
-import type { BrowserContext, } from "playwright";
+import type { Page } from "playwright";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import Feeds from "./models/Feeds.js";
 
-const scrapeFeeds = async (ctx: BrowserContext) => {
+const scrapeFeeds = async (page: Page) => {
 	console.log("✅ Scraping LinkedIn feed for scraper profile.");
-	const page = await ctx.newPage();
-	const feedUrl = "https://www.linkedin.com/feed/";
+	const feedUrl = "https://www.linkedin.com/";
 
 	await page
-		.goto(feedUrl, { waitUntil: "domcontentloaded", timeout: 0 })
+		.goto(feedUrl, { waitUntil: "domcontentloaded", timeout: 10000 })
 		.catch(async (err) => {
-			console.log(err);
-			await generateDebugInfoPng(page);
+			await generateDebugInfoPng(page, "feeds-debug-logs");
+			throw new Error(err);
 		});
 
 	const postLocators = await page

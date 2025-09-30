@@ -17,9 +17,7 @@ const initialiseBrowser = async (
 			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15",
 	});
 
-	const page = await ctx?.newPage();
-
-	return { browser, ctx, page };
+	return { browser, ctx };
 };
 
 export default initialiseBrowser;
