@@ -18,8 +18,8 @@ services:
       - PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
     working_dir: /home/node/app
     depends_on:
-      db-migrate-up:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
     volumes:
       - .:/home/node/app
       # Don't overwrite the node_modules folder in the container
@@ -31,9 +31,7 @@ services:
 
   # The PostgreSQL database service
   db:
-    build:
-      context: .
-      dockerfile: ./Dockerfile.db
+    image: postgres:16-alpine
     env_file:
       - .env.database
     healthcheck:
@@ -51,14 +49,15 @@ services:
   db-migrate-up:
     build:
       context: .
-      dockerfile: ./Dockerfile.db
+      dockerfile: ./Dockerfile.migrate
     depends_on:
-      db-migrate-down:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
     restart: "no"
     working_dir: /usr/src/scripts
     volumes:
-      - /usr/src/scripts
+      - ./justfile:/usr/src/scripts/justfile
+      - ./migrations:/usr/src/scripts/migrations
     env_file:
       - .env.database
     command: just --timestamp migrate-up
@@ -66,14 +65,15 @@ services:
   db-migrate-down:
     build:
       context: .
-      dockerfile: ./Dockerfile.db
+      dockerfile: ./Dockerfile.migrate
     restart: "no"
     working_dir: /usr/src/scripts
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - /usr/src/scripts
+      - ./justfile:/usr/src/scripts/justfile
+      - ./migrations:/usr/src/scripts/migrations
     env_file:
       - .env.database
     command: just --timestamp migrate-down

@@ -8,4 +8,4 @@ migrate-down-0002:
 
 all:
     #!/bin/sh
-    ls *.sql | column -t | sort --reverse | xargs -I {} psql "${DATABASE_URL}" -f {} || true
+    ls *.sql | column -t | sort -r | xargs -I {} psql "${DATABASE_URL}" -f {} || true
