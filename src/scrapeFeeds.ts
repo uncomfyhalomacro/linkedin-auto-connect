@@ -14,6 +14,7 @@ const scrapeFeeds = async (page: Page) => {
 	await page
 		.goto(feedUrl, { waitUntil: "domcontentloaded", timeout: 10000 })
 		.catch(async (err) => {
+			console.error(err)
 			await genfeedDebugLogs(page);
 			// throw new Error(err);
 			return;
