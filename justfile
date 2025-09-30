@@ -13,7 +13,10 @@ setup: build db-up db-migrate
 
 # Use this for your daily development to start the application
 start:
-    {{docker_cmd}} compose run app
+    {{docker_cmd}} compose run --rm app
+
+start-feeds:
+     {{docker_cmd}} compose run --rm feeds
 
 # Stop all services and remove volumes
 down:
