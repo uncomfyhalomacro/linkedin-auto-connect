@@ -1,4 +1,4 @@
-import type { BrowserContext, Page } from "playwright";
+import type { Page } from "playwright";
 import checkConnections from "./checkConnections.ts";
 import findAndConnectProfileLinks from "./findAndConnectProfileLinks.ts";
 import ScraperModel from "./models/ScraperModel.js";

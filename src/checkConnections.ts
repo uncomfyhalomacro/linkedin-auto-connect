@@ -1,5 +1,5 @@
 // Import necessary types from Playwright
-import type { BrowserContext, Page } from "playwright";
+import type { Page } from "playwright";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 
 // Main logic is wrapped in an async function
