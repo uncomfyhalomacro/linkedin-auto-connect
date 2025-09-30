@@ -17,8 +17,6 @@ const scrapeAndConnectProfiles = async (
 		scraperProfile = await ScraperModel.create({
 			secret: secret,
 		});
-	} else {
-		await scraperProfile.increment("nonce", { by: 1 });
 	}
 	await sendInvite(url, page);
 	const searchPage = await checkConnections(page);
@@ -34,7 +32,9 @@ const scrapeAndConnectProfiles = async (
 		console.log("✅ Invitations sent to connections' profiles.");
 	console.log("All done!");
 	console.log(`Adding scraper profile secret to Postgres DB...`);
-	await scraperProfile.increment("nonce", { by: 1 });
+	await scraperProfile.update({
+		last_used: new Date(),
+	});
 };
 
 export default scrapeAndConnectProfiles;

@@ -67,28 +67,32 @@ const scrapeFeeds = async (page: Page) => {
 				}
 
 				console.log(`✅ Found post url: ${postUrl}`);
-				console.log("Removing tracking and URL paths")
+				console.log("Removing tracking and URL paths");
 
-				const urlWith = new URL(postUrl)
-				const cleanPostUrl = urlWith.origin + urlWith.pathname
+				const urlWith = new URL(postUrl);
+				const cleanPostUrl = urlWith.origin + urlWith.pathname;
 
-				console.log(`✅ Cleaned Post URL: ${cleanPostUrl}`)
+				console.log(`✅ Cleaned Post URL: ${cleanPostUrl}`);
 
 				const postFeedItem = await Feeds.findOne({
 					where: { post_url: cleanPostUrl },
 				});
 
 				if (!postFeedItem) {
-					await Feeds.create({ post_url: cleanPostUrl, fetched_at: new Date(), interacted_on: new Date() }).catch((err) => {
+					await Feeds.create({
+						post_url: cleanPostUrl,
+						first_fetched_at: new Date(),
+						last_interacted_on: new Date(),
+					}).catch((err) => {
 						console.error(err);
 					});
 					console.log(`✅ Added post to database...`);
 				} else {
 					console.log("✅ Found! Has been interacted again: ", cleanPostUrl);
-					await postFeedItem.increment("nonce", { by: 1 }).catch((err) => {
-						console.error(err);
+					await postFeedItem.update({
+						last_interacted_on: new Date(),
+						note: "Visited again in the feed during scrape runs.",
 					});
-					await postFeedItem.update({ interacted_on: new Date() })
 					console.log(`✅ Updated post to database...`);
 				}
 			} else {
