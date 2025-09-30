@@ -8,7 +8,7 @@ const scrapeFeeds = async (ctx: BrowserContext) => {
 	const feedUrl = "https://www.linkedin.com/feed/";
 
 	await page
-		.goto(feedUrl, { waitUntil: "domcontentloaded", timeout: 10000 })
+		.goto(feedUrl, { waitUntil: "domcontentloaded", timeout: 0 })
 		.catch(async (err) => {
 			console.log(err);
 			await generateDebugInfoPng(page);
