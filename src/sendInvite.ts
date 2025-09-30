@@ -88,21 +88,21 @@ async function sendInvite(url: string, page: Page) {
 		}
 
 		// If still nothing, only now check if it’s actually pending
-		if (!clicked) {
-			const isPending = await page
-				.getByRole("main")
-				.getByRole("button")
-				.getByLabel(PENDING)
-				.first()
-				.isVisible()
-				.catch(() => false);
-			if (isPending) {
-				if (invitationStatus !== "connected") {
-					console.log("ℹ️ Invitation already pending.");
-					invitationStatus = "pending";
-					console.log("Checking profile connections...");
-				}
+		const isPending = await page
+			.getByRole("main")
+			.getByRole("button")
+			.getByLabel(PENDING)
+			.first()
+			.isVisible()
+			.catch(() => false);
+		if (isPending) {
+			if (invitationStatus !== "connected") {
+				console.log("ℹ️ Invitation already pending.");
+				invitationStatus = "pending";
+				console.log("Checking profile connections...");
 			}
+		}
+		if (!clicked) {
 			// Debug: print accessible names of header buttons
 			const mainEl = await page.$("main");
 			const acc = mainEl
@@ -178,7 +178,7 @@ async function sendInvite(url: string, page: Page) {
 					pending: invitationStatus === "sent",
 				});
 				break; // Stops execution from continuing to the next case
-			case 'pending':
+			case "pending":
 				result = { status: invitationStatus, success: true, fail: false };
 				await profileLink.update({
 					connected: false,
