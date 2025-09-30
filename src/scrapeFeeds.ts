@@ -15,7 +15,7 @@ const scrapeFeeds = async (ctx: BrowserContext) => {
 		});
 
 	const postLocators = await page
-		.locator('div[data-id="urn:li:activity:"')
+		.locator('div[data-id="urn:li:activity:"]')
 		.all();
 
 	for (const postLocator of postLocators) {
