@@ -23,7 +23,7 @@ async function checkConnections(page: Page) {
 				// --- Attempt 2: Find link by text and navigate ---
 				console.log("Fallback 1: Locating link by text...");
 				const connectionsLink = page.getByRole("link", {
-					name: /\/connections\//,
+					name: /connections/,
 				});
 				const connectionURL = await connectionsLink
 					.first()
