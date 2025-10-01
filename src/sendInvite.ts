@@ -78,15 +78,16 @@ async function sendInvite(url: string, page: Page) {
 				// Or check if connected already
 				const isConnected = await page
 					.getByRole("main")
-					.getByRole("button", { name: /Remove your connection to/i })
+					.getByLabel(/Remove your connection to/i)  // Sadly, I am not sure why even if the div is set to role="button"
 					.first()
-					.isVisible()
+					.count()
 					.catch(() => false);
 
 				if (isConnected) {
 					console.log("❤️ Already connected to profile.");
 					invitationStatus = "connected";
 				}
+				await generateDebugInfoPng(page, "uwu")
 			}
 		}
 
