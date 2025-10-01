@@ -34,7 +34,7 @@ import scrapeFeeds from "./scrapeFeeds.ts";
 	await page.goto("https://linkedin.com", {
 		waitUntil: "domcontentloaded",
 	});
-	await checkIfSessionStateHasExpired(page);  // Exit in panic
+	await checkIfSessionStateHasExpired(page); // Exit in panic
 	await scrapeFeeds(page);
 
 	await ctx.close();

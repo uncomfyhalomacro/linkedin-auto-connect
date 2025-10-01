@@ -43,7 +43,7 @@ import scrapeFeeds from "./scrapeFeeds.ts";
 	const page1 = await ctx.newPage();
 	await mainPage.goto("https://linkedin.com", {
 		waitUntil: "domcontentloaded",
-		timeout: 0
+		timeout: 0,
 	});
 	await checkIfSessionStateHasExpired(mainPage); // Exit in panic
 	const page2 = await ctx.newPage();
