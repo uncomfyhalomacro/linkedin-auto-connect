@@ -38,16 +38,11 @@ async function sendInvite(url: string, page: Page) {
 		if (!clicked) {
 			const moreBtn = page
 				.getByRole("main")
-				.getByRole("button", { name: MORE })
+				.getByRole("button", { name: "More actions" })
 				.first();
 			if (await moreBtn.isVisible().catch(() => false)) {
-				await moreBtn.click();
-				const overlay = page
-					.locator('[role="menu"], .artdeco-dropdown__content, [role="dialog"]')
-					.first();
-				await overlay.waitFor({ state: "attached", timeout: 3000 });
 				clicked = await clickFirstVisible([
-					overlay.getByRole("menuitem", { name: CONNECT }).first(),
+					page.getByRole("menuitem", { name: CONNECT }).first(),
 					page
 						.getByRole("main")
 						.getByRole("button", { name: /^Invite .* to connect$/i })
@@ -56,7 +51,7 @@ async function sendInvite(url: string, page: Page) {
 						.getByRole("main")
 						.getByRole("button", { name: /Invite/i })
 						.first(),
-					overlay.locator(`:text-matches("${CONNECT.source}")`).first(),
+					page.locator(`:text-matches("${CONNECT.source}")`).first(),
 				]);
 			}
 		}
@@ -74,13 +69,13 @@ async function sendInvite(url: string, page: Page) {
 					page.getByRole("main").getByRole("button", { name: re1 }).first(),
 					page.getByRole("main").getByRole("button", { name: re2 }).first(),
 					page.getByRole("main").getByLabel(re1).first(),
-					page.getByRole("main").getByLabel(re2).first()
+					page.getByRole("main").getByLabel(re2).first(),
 				]);
 
 				// Or check if connected already
 				const isConnected = await page
 					.getByRole("main")
-					.getByLabel(/Remove your connection to/i)  // Sadly, I am not sure why even if the div is set to role="button"
+					.getByLabel(/Remove your connection to/i) // Sadly, I am not sure why even if the div is set to role="button"
 					.first()
 					.count()
 					.catch(() => false);
@@ -89,7 +84,7 @@ async function sendInvite(url: string, page: Page) {
 					console.log("❤️ Already connected to profile.");
 					invitationStatus = "connected";
 				}
-				await generateDebugInfoPng(page, "uwu")
+				await generateDebugInfoPng(page, "uwu");
 			}
 		}
 

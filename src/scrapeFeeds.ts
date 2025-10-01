@@ -22,7 +22,7 @@ const scrapeFeeds = async (page: Page) => {
 
 	const h1 = page.getByRole("main").getByRole("heading", { level: 1 }).first();
 	await h1.waitFor({ state: "visible", timeout: 15000 }).catch(() => {});
-	await page.waitForLoadState("networkidle").catch(() => {});
+	await page.waitForLoadState("domcontentloaded").catch(() => {});
 
 	const postLocators = await page
 		.getByRole("article")
