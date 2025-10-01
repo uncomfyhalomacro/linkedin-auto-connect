@@ -96,7 +96,8 @@ async function findAndConnectProfileLinks(
 						[Op.or]: {
 							member_id_url: filteredUrl,
 							clean_profile_url: filteredUrl,
-							connected: false, // attempt to send a connection again
+							connected: false, // attempt to send a connection again.
+							pending: false
 						},
 					},
 				});
