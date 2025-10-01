@@ -105,9 +105,44 @@ function escRe(s: string) {
 	return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+async function checkMoreMenu(page: Page, label: string | RegExp) {
+	const locator = page.getByRole("main");
+	const moreBtn = locator.getByRole("button", { name: "More actions" }).first();
+	await moreBtn.click();
+	let expanded = await moreBtn.getAttribute("aria-expanded");
+	console.log("Has expanded:", expanded);
+
+	await page.mouse.down();
+
+	const hayStackBtn = page.getByLabel(label);
+
+	// await removeConnBtn.waitFor({state: "attached", timeout})
+
+	if ((await hayStackBtn.first().count()) > 0) {
+		console.log("Found button");
+		return { moreBtn, hayStackBtn: hayStackBtn.first() };
+	}
+
+	// Try to use getByRole
+	const buttonAsRole = page.getByRole("button", { name: label });
+
+	if (await buttonAsRole.isVisible()) {
+		console.log("Found button");
+		return { moreBtn, hayStackBtn: buttonAsRole.first() };
+	}
+
+	if (expanded) {
+		await moreBtn.click();
+		expanded = await moreBtn.getAttribute("aria-expanded");
+		console.log("Has button now closed: ", expanded);
+	}
+	return undefined;
+}
+
 export {
 	clickFirstVisible,
 	escRe,
 	getHashFormOfLink,
 	checkIfSessionStateHasExpired,
+	checkMoreMenu,
 };
