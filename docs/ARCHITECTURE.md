@@ -92,7 +92,8 @@ CREATE TABLE
         clean_profile_url TEXT NOT NULL,
         connected BOOLEAN DEFAULT false,
         pending BOOLEAN DEFAULT false,
-        name TEXT NOT NULL
+        name TEXT NOT NULL,
+        UNIQUE(member_id_url, clean_profile_url)
     );
 ```
 
