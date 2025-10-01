@@ -61,7 +61,7 @@ async function findAndConnectProfileLinks(
 			}),
 		);
 
-		const foundUrls = [...urls, ...suggestedUrls];
+		const foundUrls = [...urls, ...suggestedUrls, url];
 
 		// Print the final list of URLs
 		console.log("--- Extracted URLs ---");
@@ -78,8 +78,6 @@ async function findAndConnectProfileLinks(
 			url.startsWith("https://www.linkedin.com/in"),
 		);
 
-		filteredUrls.push(url);
-
 		// Start from the second element to skip own profile
 		console.log(
 			`✅ ${filteredUrls.length} unique profile URLs found. Starting to send invites...`,
@@ -93,20 +91,13 @@ async function findAndConnectProfileLinks(
 			try {
 				const profile = await ProfileLinks.findOne({
 					where: {
-						[Op.or]: {
-							clean_profile_url: filteredUrl,
-							pending: true,
-						},
+						[Op.and]: [{ clean_profile_url: filteredUrl }, { pending: false }],
 					},
 				});
 
 				const profileWithMemberId = await ProfileLinks.findOne({
 					where: {
-						[Op.or]: {
-							member_id_url: filteredUrl,
-							connected: false, // attempt to send a connection again.
-							pending: true,
-						},
+						[Op.and]: [{ member_id_url: filteredUrl }, { pending: false }],
 					},
 				});
 
