@@ -33,7 +33,7 @@ async function checkIfSessionStateHasExpired(page: Page) {
 		);
 	}
 	console.log("ℹ️ Current sesssion is still authenticated");
-	await page.goBack({waitUntil: 'domcontentloaded'})
+	await page.goBack({ waitUntil: "load" });
 	await generateDebugInfoPng(page, "auth-debug-logs");
 }
 

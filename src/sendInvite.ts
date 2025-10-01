@@ -1,16 +1,10 @@
 import type { Page } from "playwright";
-import {
-	checkIfSessionStateHasExpired,
-	clickFirstVisible,
-	escRe,
-	getHashFormOfLink,
-} from "./common.ts";
+import { clickFirstVisible, escRe, getHashFormOfLink } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import ProfileLinks from "./models/ProfileLinks.js";
 import type { InvitationStatus } from "./types.ts";
 
 async function sendInvite(url: string, page: Page) {
-	await checkIfSessionStateHasExpired(page); // Exit in panic
 	const { memberIdUrl, cleanProfileUrl } = await getHashFormOfLink(page, url);
 	// i18n label patterns
 	const CONNECT =

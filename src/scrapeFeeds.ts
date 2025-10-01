@@ -1,5 +1,5 @@
 import type { Page } from "playwright";
-import { checkIfSessionStateHasExpired, clickFirstVisible } from "./common.ts";
+import { clickFirstVisible } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import Feeds from "./models/Feeds.js";
 
@@ -7,7 +7,6 @@ const genfeedDebugLogs = async (p: Page) => {
 	await generateDebugInfoPng(p, "feeds-debug-logs");
 };
 const scrapeFeeds = async (page: Page) => {
-	await checkIfSessionStateHasExpired(page);  // Exit in panic
 	console.log("✅ Scraping LinkedIn feed for scraper profile.");
 	const feedUrl = "https://www.linkedin.com/";
 	const controlMenuRegex = /^Open control menu for post by /i;

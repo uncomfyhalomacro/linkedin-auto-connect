@@ -65,3 +65,4 @@ migrate-down:
 delete-image-logs:
     rm -rv ./debug-logs || true
     rm -rv ./feeds-debug-logs || true
+    rm -rv ./auth-debug-logs || true

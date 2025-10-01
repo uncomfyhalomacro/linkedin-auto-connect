@@ -1,7 +1,6 @@
 // findProfileLinks.ts
 import type { Page } from "playwright";
 import { Op } from "sequelize";
-import { checkIfSessionStateHasExpired } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import ProfileLinks from "./models/ProfileLinks.js";
 import type ScraperModel from "./models/ScraperModel.js";
@@ -16,7 +15,6 @@ async function findAndConnectProfileLinks(
 	page: Page,
 	currentScraperProfile: ScraperModel,
 ) {
-	await checkIfSessionStateHasExpired(page);  // Exit in panic
 	try {
 		console.log("Page loaded. Searching for profile links...");
 
