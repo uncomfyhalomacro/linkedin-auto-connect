@@ -39,9 +39,15 @@ import scrapeFeeds from "./scrapeFeeds.ts";
 		process.exit(1);
 	}
 
+	const mainPage = await ctx.newPage();
 	const page1 = await ctx.newPage();
-	await checkIfSessionStateHasExpired(page1);  // Exit in panic
+	await mainPage.goto("https://linkedin.com", {
+		waitUntil: "domcontentloaded",
+		timeout: 0
+	});
+	await checkIfSessionStateHasExpired(mainPage); // Exit in panic
 	const page2 = await ctx.newPage();
+	await mainPage.close();
 	await Promise.all([
 		scrapeAndConnectProfiles(page1, secret, url),
 		scrapeFeeds(page2),

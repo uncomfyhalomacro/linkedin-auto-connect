@@ -39,7 +39,10 @@ import scrapeAndConnectProfiles from "./scrapeAndConnectProfiles.ts";
 	}
 
 	const page = await ctx.newPage();
-	await checkIfSessionStateHasExpired(page);  // Exit in panic
+	await page.goto("https://linkedin.com", {
+		waitUntil: "domcontentloaded",
+	});
+	await checkIfSessionStateHasExpired(page); // Exit in panic
 	await scrapeAndConnectProfiles(page, secret, url);
 
 	await ctx.close();

@@ -2,17 +2,41 @@ import type { Locator, Page } from "playwright";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 
 async function checkIfSessionStateHasExpired(page: Page) {
-	const locators = await page
+	await page.waitForLoadState();
+	const checkForSignIn = await page
+		.getByRole("button", { name: / Sign in/i })
+		.all();
+	const checkForSignUp = await page
 		.getByRole("button", { name: / Agree & Join/i })
 		.all();
-	if (locators.length > 0) {
+	const checkForJoinNow = await page
+		.getByRole("link", { name: / Join now/i })
+		.all();
+	if (
+		checkForSignIn.length + checkForSignUp.length + checkForJoinNow.length >
+			0 ||
+		page.url().includes("signup")
+	) {
+		await generateDebugInfoPng(page, "auth-debug-logs");
 		throw new Error(
 			"❌ Your current session needs a refreshed authenticated state!",
 		);
-	} else {
-		console.log("ℹ️ Current sesssion is still authenticated");
 	}
+	await page.goto("https://www.linked.com/feed", {
+		waitUntil: "domcontentloaded",
+	});
+	const main = await page.getByLabel(/Main Feed/i).all();
+	if (main.length === 0) {
+		await generateDebugInfoPng(page, "auth-debug-logs");
+		throw new Error(
+			"❌ Your current session needs a refreshed authenticated state!",
+		);
+	}
+	console.log("ℹ️ Current sesssion is still authenticated");
+	await page.goBack({waitUntil: 'domcontentloaded'})
+	await generateDebugInfoPng(page, "auth-debug-logs");
 }
+
 // This hopefully ensures uniqueness of URLs
 async function getHashFormOfLink(page: Page, url: string) {
 	// 1. Load page first
