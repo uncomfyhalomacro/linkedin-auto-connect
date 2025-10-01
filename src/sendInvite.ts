@@ -117,7 +117,7 @@ async function sendInvite(url: string, page: Page) {
 				(n.children || []).forEach(walk);
 			})(acc);
 
-			if (btnNames.length === 0) {
+			if (btnNames.length === 0 && invitationStatus !== 'connected') {
 				console.log(
 					"❌ No Connect found. Accessible header button names:",
 					btnNames,
