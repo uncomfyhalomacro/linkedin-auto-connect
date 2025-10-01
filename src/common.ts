@@ -2,7 +2,6 @@ import type { Locator, Page } from "playwright";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 
 async function checkIfSessionStateHasExpired(page: Page) {
-	await page.waitForLoadState();
 	const checkForSignIn = await page
 		.getByRole("button", { name: / Sign in/i })
 		.all();
