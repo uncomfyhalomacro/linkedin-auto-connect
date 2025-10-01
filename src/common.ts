@@ -22,7 +22,7 @@ async function checkIfSessionStateHasExpired(page: Page) {
 			"❌ Your current session needs a refreshed authenticated state!",
 		);
 	}
-	await page.goto("https://www.linked.com/feed", {
+	await page.goto("https://www.linkedin.com/feed", {
 		waitUntil: "domcontentloaded",
 	});
 	const main = await page.getByLabel(/Main Feed/i).all();
