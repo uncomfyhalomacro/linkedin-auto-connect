@@ -24,16 +24,20 @@ const scrapeFeeds = async (page: Page) => {
 	await h1.waitFor({ state: "visible", timeout: 3000 }).catch(() => {});
 	await page.waitForLoadState("domcontentloaded").catch(() => {});
 
-	const postLocators = await page
+	let postLocators = await page
 		.getByRole("article")
 		// .locator('div[data-id*="urn:li:activity"]')
 		.all();
 
-	if (postLocators.length === 0) {
+	while (postLocators.length === 0) {
 		const err = "‼️ No post data found!";
 		console.log(err);
-		// throw new Error(err);
-		return;
+		console.log("Scrolling down more and more");
+		await page.mouse.wheel(0, -30);
+		postLocators = await page
+			.getByRole("article")
+			// .locator('div[data-id*="urn:li:activity"]')
+			.all();
 	}
 
 	console.log("✅ Found articles: ", postLocators.length);
@@ -47,7 +51,7 @@ const scrapeFeeds = async (page: Page) => {
 		if (await clickFirstVisible([controlMenuButton])) {
 			console.log("Clicked the control menu button");
 			const overlay = postLocator.getByLabel("Control Menu Options").first();
-			await overlay.waitFor({ timeout: 5000, state: "visible" });
+			// overlay.waitFor({state: 'visible'})
 			const h5Button = await overlay
 				.getByRole("button", { name: "Copy link to post" })
 				.first();
