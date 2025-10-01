@@ -1,6 +1,18 @@
 import type { Locator, Page } from "playwright";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 
+async function checkIfSessionStateHasExpired(page: Page) {
+	const locators = await page
+		.getByRole("button", { name: / Agree & Join/i })
+		.all();
+	if (locators.length > 0) {
+		throw new Error(
+			"❌ Your current session needs a refreshed authenticated state!",
+		);
+	} else {
+		console.log("ℹ️ Current sesssion is still authenticated");
+	}
+}
 // This hopefully ensures uniqueness of URLs
 async function getHashFormOfLink(page: Page, url: string) {
 	// 1. Load page first
@@ -70,4 +82,9 @@ function escRe(s: string) {
 	return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export { clickFirstVisible, escRe, getHashFormOfLink };
+export {
+	clickFirstVisible,
+	escRe,
+	getHashFormOfLink,
+	checkIfSessionStateHasExpired,
+};

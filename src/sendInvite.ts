@@ -1,10 +1,16 @@
 import type { Page } from "playwright";
-import { clickFirstVisible, escRe, getHashFormOfLink } from "./common.ts";
+import {
+	checkIfSessionStateHasExpired,
+	clickFirstVisible,
+	escRe,
+	getHashFormOfLink,
+} from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import ProfileLinks from "./models/ProfileLinks.js";
 import type { InvitationStatus } from "./types.ts";
 
 async function sendInvite(url: string, page: Page) {
+	await checkIfSessionStateHasExpired(page); // Exit in panic
 	const { memberIdUrl, cleanProfileUrl } = await getHashFormOfLink(page, url);
 	// i18n label patterns
 	const CONNECT =
@@ -48,10 +54,14 @@ async function sendInvite(url: string, page: Page) {
 				await overlay.waitFor({ state: "attached", timeout: 3000 });
 				clicked = await clickFirstVisible([
 					overlay.getByRole("menuitem", { name: CONNECT }).first(),
-					page.getByRole("main")
+					page
+						.getByRole("main")
 						.getByRole("button", { name: /^Invite .* to connect$/i })
 						.first(),
-					page.getByRole("main").getByRole("button", { name: /Invite/i }).first(),
+					page
+						.getByRole("main")
+						.getByRole("button", { name: /Invite/i })
+						.first(),
 					overlay.locator(`:text-matches("${CONNECT.source}")`).first(),
 				]);
 			}

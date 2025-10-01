@@ -1,6 +1,7 @@
 // findProfileLinks.ts
 import type { Page } from "playwright";
 import { Op } from "sequelize";
+import { checkIfSessionStateHasExpired } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import ProfileLinks from "./models/ProfileLinks.js";
 import type ScraperModel from "./models/ScraperModel.js";
@@ -15,6 +16,7 @@ async function findAndConnectProfileLinks(
 	page: Page,
 	currentScraperProfile: ScraperModel,
 ) {
+	await checkIfSessionStateHasExpired(page);  // Exit in panic
 	try {
 		console.log("Page loaded. Searching for profile links...");
 
@@ -45,13 +47,31 @@ async function findAndConnectProfileLinks(
 			}),
 		);
 
+		const growLink = "https://www.linkedin.com/mynetwork/grow/";
+		console.log("✅ Accessing Grow Your Network page...");
+		await page.goto(growLink, { waitUntil: "domcontentloaded", timeout: 0 });
+
+		const growLinkLocator = page.getByRole("link");
+		console.log("✅ Getting more suggested profile links...");
+		const growLinkSuggestedConnections = await page.getByRole("link").all();
+
+		const suggestedUrls = await Promise.all(
+			growLinkSuggestedConnections.map(async (locator) => {
+				const href = await locator.getAttribute("href");
+				// Convert the relative URL (e.g., /in/john-doe?...) to an absolute one
+				return new URL(href ?? "", "https://www.linkedin.com").toString();
+			}),
+		);
+
+		const foundUrls = [...urls, ...suggestedUrls];
+
 		// Print the final list of URLs
 		console.log("--- Extracted URLs ---");
 		const cleanedUrls: Array<string> = [];
-		urls.forEach((url) => {
+		foundUrls.forEach((foundUrl) => {
 			// Split the `?` part of the URL to avoid duplicate invites
-			const cleanedUrl = url.split("?")[0];
-			cleanedUrls.push(cleanedUrl ?? url);
+			const cleanedUrl = foundUrl.split("?")[0];
+			cleanedUrls.push(cleanedUrl ?? foundUrl);
 		});
 
 		// Only get unique URLs with this substring "https://www.linkedin.com/in/"
@@ -76,6 +96,7 @@ async function findAndConnectProfileLinks(
 						[Op.or]: {
 							member_id_url: filteredUrl,
 							clean_profile_url: filteredUrl,
+							connected: false, // attempt to send a connection again
 						},
 					},
 				});

@@ -1,5 +1,6 @@
 // Usage: node linkedin-invite.js "<profile_url>" <storage_state.json> [--headed]
 
+import { checkIfSessionStateHasExpired } from "./common.ts";
 import { decryptJson } from "./encryption.ts";
 import initialiseBrowser from "./initialiseBrowser.ts";
 import scrapeAndConnectProfiles from "./scrapeAndConnectProfiles.ts";
@@ -38,6 +39,7 @@ import scrapeAndConnectProfiles from "./scrapeAndConnectProfiles.ts";
 	}
 
 	const page = await ctx.newPage();
+	await checkIfSessionStateHasExpired(page);  // Exit in panic
 	await scrapeAndConnectProfiles(page, secret, url);
 
 	await ctx.close();
