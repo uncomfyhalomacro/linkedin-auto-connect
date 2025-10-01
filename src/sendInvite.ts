@@ -1,18 +1,48 @@
 import type { Page } from "playwright";
-import { clickFirstVisible, escRe, getHashFormOfLink } from "./common.ts";
+import {
+	checkMoreMenu,
+	clickFirstVisible,
+	escRe,
+	getHashFormOfLink,
+} from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import ProfileLinks from "./models/ProfileLinks.js";
 import type { InvitationStatus } from "./types.ts";
+
+async function checkInviteToConnectBtn(page: Page) {
+	const h1 = page.getByRole("main").getByRole("heading", { level: 1 }).first();
+	const name = (await h1.innerText().catch(() => "")).trim();
+	if (name) {
+		const INVITE = new RegExp(`Invite\\s+${escRe(name)}\\s+to\\s+connect`, "i");
+		return await checkMoreMenu(page, INVITE);
+	}
+	return undefined;
+}
+
+async function checkRemoveConnectionBtn(page: Page) {
+	const REMOVE = /Remove your connection to/i;
+	return await checkMoreMenu(page, REMOVE);
+}
+
+async function checkPendingBtn(page: Page) {
+	const PENDING = /(Pending|Ausstehend|Withdraw)/i;
+	// If still nothing, only now check if it’s actually pending
+	const isPending = await page
+		.getByRole("main")
+		.getByRole("button", { name: PENDING })
+		.first()
+		.isVisible()
+		.catch(() => false);
+	return isPending;
+}
 
 async function sendInvite(url: string, page: Page) {
 	const { memberIdUrl, cleanProfileUrl } = await getHashFormOfLink(page, url);
 	// i18n label patterns
 	const CONNECT =
 		/(Connect|Vernetzen|Se connecter|Conectar|Collegati|Conectar-se)/i;
-	const MORE = /(More|More actions|Mehr|Plus|Más|Altro)/i;
 	const SEND = /(Send( without a note)?|Senden|Envoyer|Enviar|Invia)/i;
 	// Only these truly mean “already sent”
-	const PENDING = /(Pending|Ausstehend|Withdraw)/i;
 
 	let invitationStatus: InvitationStatus = "fail";
 
@@ -26,7 +56,7 @@ async function sendInvite(url: string, page: Page) {
 		await page.waitForLoadState("networkidle").catch(() => {});
 
 		// 1) Prefer Connect if it exists (don’t early-out because of Message/Following)
-		let clicked = await clickFirstVisible([
+		await clickFirstVisible([
 			page.getByRole("main").getByRole("button", { name: CONNECT }).first(),
 			page
 				.getByRole("main")
@@ -34,14 +64,46 @@ async function sendInvite(url: string, page: Page) {
 				.first(), // extra fallback
 		]);
 
-		// 2) If not visible, try under “More”
-		if (!clicked) {
-			const moreBtn = page
-				.getByRole("main")
-				.getByRole("button", { name: "More actions" })
-				.first();
-			if (await moreBtn.isVisible().catch(() => false)) {
-				clicked = await clickFirstVisible([
+		await page.reload({ waitUntil: "domcontentloaded" });
+
+		const isPending = await checkPendingBtn(page);
+
+		if (isPending) {
+			console.log("ℹ️ You already sent an invitation to this profile!");
+			invitationStatus = "pending";
+		}
+
+		const isConnectedAlready = await checkRemoveConnectionBtn(page);
+
+		if (isConnectedAlready) {
+			invitationStatus = "connected";
+			console.log("✅ You are already connnected to this profile!");
+			await isConnectedAlready.moreBtn.first().click();
+		}
+
+		const resInvite = await checkInviteToConnectBtn(page);
+
+		if (resInvite) {
+			const expanded = await resInvite.moreBtn
+				.first()
+				.getAttribute("aria-expanded");
+			if (expanded === "false") {
+				await resInvite.moreBtn.first().click();
+			}
+			console.log("Attempting to invite profile...");
+			const visible = await resInvite.hayStackBtn.first().isVisible();
+			if (visible) {
+				console.log("Inviting to connect with current profile");
+				await clickFirstVisible([
+					page.getByRole("menuitem", { name: CONNECT }).first(),
+					page
+						.getByRole("main")
+						.getByRole("button", { name: /Invite/i })
+						.first(),
+					page.locator(`:text-matches("${CONNECT.source}")`).first(),
+				]);
+			} else {
+				await clickFirstVisible([
 					page.getByRole("menuitem", { name: CONNECT }).first(),
 					page
 						.getByRole("main")
@@ -56,94 +118,20 @@ async function sendInvite(url: string, page: Page) {
 			}
 		}
 
-		// 3) Rare fallback: “Invite <name> to connect”
-		if (clicked) {
-			const name = (await h1.innerText().catch(() => "")).trim();
-			if (name) {
-				const re1 = new RegExp(
-					`Invite\\s+${escRe(name)}\\s+to\\s+connect`,
-					"i",
-				);
-				const re2 = new RegExp(`Invite\\s+${escRe(name)}\\s+to`, "i");
-				clicked = await clickFirstVisible([
-					page.getByRole("main").getByRole("button", { name: re1 }).first(),
-					page.getByRole("main").getByRole("button", { name: re2 }).first(),
-					page.getByRole("main").getByLabel(re1).first(),
-					page.getByRole("main").getByLabel(re2).first(),
-				]);
-
-				// Or check if connected already
-				const isConnected = await page
-					.getByRole("main")
-					.getByLabel(/Remove your connection to/i) // Sadly, I am not sure why even if the div is set to role="button"
-					.first()
-					.count()
-					.catch(() => false);
-
-				if (isConnected) {
-					console.log("❤️ Already connected to profile.");
-					invitationStatus = "connected";
-				}
-				await generateDebugInfoPng(page, "uwu");
-			}
-		}
-
-		// If still nothing, only now check if it’s actually pending
-		const isPending = await page
-			.getByRole("main")
-			.getByRole("button", { name: PENDING })
-			.first()
-			.isVisible()
-			.catch(() => false);
-		if (isPending) {
-			if (invitationStatus !== "connected") {
-				console.log("ℹ️ Invitation already pending.");
-				invitationStatus = "pending";
-				console.log("Checking profile connections...");
-			}
-		}
-		if (!clicked) {
-			// Debug: print accessible names of header buttons
-			const mainEl = await page.$("main");
-			const acc = mainEl
-				? await page.accessibility
-						.snapshot({ root: mainEl, interestingOnly: true })
-						.catch(() => null)
-				: null;
-			const btnNames = [];
-			(function walk(n) {
-				if (!n) return;
-				if (n.role === "button" && n.name) btnNames.push(n.name);
-				(n.children || []).forEach(walk);
-			})(acc);
-
-			if (btnNames.length === 0 && invitationStatus !== 'connected') {
-				console.log(
-					"❌ No Connect found. Accessible header button names:",
-					btnNames,
-				);
-				await generateDebugInfoPng(page).catch((err) => {
-					console.log(
-						"‼️ Something went wrong when saving the debug log: ",
-						err,
-					);
-				});
-			}
-		}
-
 		// 5) Dialog: click “Send / Send without a note”
 		const dlg = page.getByRole("dialog");
 		const successInvite = await clickFirstVisible([
 			dlg.getByRole("button", { name: SEND }).first(),
 			dlg.locator(`button:text-matches("${SEND.source}")`).first(),
 		]);
-		await page.waitForTimeout(500); // settle
 
 		const who = (await h1.innerText().catch(() => "")).trim();
 
 		if (successInvite) {
 			invitationStatus = "sent";
 			console.log(`✅ Invite sent${who ? ` to ${who}` : ""}.`);
+		} else {
+			await generateDebugInfoPng(page, "debug-logs");
 		}
 
 		let profileLink = await ProfileLinks.findOne({
@@ -164,7 +152,7 @@ async function sendInvite(url: string, page: Page) {
 
 		console.log("Checking profile connections...");
 		await page
-			.waitForLoadState("networkidle", { timeout: 20000 })
+			.waitForLoadState("domcontentloaded", { timeout: 20000 })
 			.catch((err) => {
 				console.log(err);
 			});
@@ -202,9 +190,6 @@ async function sendInvite(url: string, page: Page) {
 		await generateDebugInfoPng(page).catch((err) => {
 			console.log("‼️ Something went wrong when saving the debug log: ", err);
 		});
-		console.log(
-			"❌ Screenshot saved as error-screenshot.png for debugging purposes.",
-		);
 		return { status: invitationStatus, success: false, fail: true };
 	}
 }
