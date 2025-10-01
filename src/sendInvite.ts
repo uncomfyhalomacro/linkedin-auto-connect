@@ -73,6 +73,8 @@ async function sendInvite(url: string, page: Page) {
 				clicked = await clickFirstVisible([
 					page.getByRole("main").getByRole("button", { name: re1 }).first(),
 					page.getByRole("main").getByRole("button", { name: re2 }).first(),
+					page.getByRole("main").getByLabel(re1).first(),
+					page.getByRole("main").getByLabel(re2).first()
 				]);
 
 				// Or check if connected already
