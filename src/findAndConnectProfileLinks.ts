@@ -51,7 +51,7 @@ async function findAndConnectProfileLinks(
 
 		const growLinkLocator = page.getByRole("link");
 		console.log("✅ Getting more suggested profile links...");
-		const growLinkSuggestedConnections = await page.getByRole("link").all();
+		const growLinkSuggestedConnections = await growLinkLocator.all();
 
 		const suggestedUrls = await Promise.all(
 			growLinkSuggestedConnections.map(async (locator) => {
@@ -78,6 +78,8 @@ async function findAndConnectProfileLinks(
 			url.startsWith("https://www.linkedin.com/in"),
 		);
 
+		filteredUrls.push(url);
+
 		// Start from the second element to skip own profile
 		console.log(
 			`✅ ${filteredUrls.length} unique profile URLs found. Starting to send invites...`,
@@ -89,18 +91,26 @@ async function findAndConnectProfileLinks(
 		// Use a for...of loop to handle async operations sequentially
 		for (const [index, filteredUrl] of filteredUrls.entries()) {
 			try {
-				const profileLink = await ProfileLinks.findOne({
+				const profile = await ProfileLinks.findOne({
 					where: {
 						[Op.or]: {
-							member_id_url: filteredUrl,
 							clean_profile_url: filteredUrl,
-							connected: false, // attempt to send a connection again.
-							pending: false
+							pending: true,
 						},
 					},
 				});
 
-				if (filteredUrl === url || profileLink != null) {
+				const profileWithMemberId = await ProfileLinks.findOne({
+					where: {
+						[Op.or]: {
+							member_id_url: filteredUrl,
+							connected: false, // attempt to send a connection again.
+							pending: true,
+						},
+					},
+				});
+
+				if (!profile || !profileWithMemberId) {
 					console.log(`Skipping profile URL: ${filteredUrl}`);
 					continue; // Skip sending invite to profile passed from sendInvite
 				}
