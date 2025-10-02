@@ -1,7 +1,7 @@
 // findProfileLinks.ts
 import type { Page } from "playwright";
 import { Op } from "sequelize";
-import { sleep } from "./common.ts";
+import { throttle } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import ProfileLinks from "./models/ProfileLinks.js";
 import type ScraperModel from "./models/ScraperModel.js";
@@ -54,6 +54,7 @@ async function findAndConnectProfileLinks(
 		for (let i = 0; i < maxPixel; i += 40) {
 			await page.mouse.wheel(0, -1 * i);
 			const additionalGrowLinks = await growLinkLocator.all();
+			growLinkSuggestedConnections.concat(additionalGrowLinks)
 		}
 
 		const suggestedUrls = await Promise.all(
@@ -118,8 +119,7 @@ async function findAndConnectProfileLinks(
 					await currentScraperProfile.increment("connections", { by: 1 });
 				}
 
-				// Throttle requests to mimic human behavior
-				await sleep(2000 + Math.random() * 3000); // Wait 2-5 seconds
+				await throttle(2, 10);
 			} catch (err) {
 				console.error(`❌ Error sending invite to ${filteredUrl}:`, err);
 				await generateDebugInfoPng(page).catch((err) => {
