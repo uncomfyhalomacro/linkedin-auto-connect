@@ -1,14 +1,11 @@
 // findProfileLinks.ts
 import type { Page } from "playwright";
 import { Op } from "sequelize";
+import { sleep } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import ProfileLinks from "./models/ProfileLinks.js";
 import type ScraperModel from "./models/ScraperModel.js";
 import sendInvite from "./sendInvite.ts";
-
-function sleep(ms: number): Promise<void> {
-	return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 async function findAndConnectProfileLinks(
 	url: string,
@@ -52,6 +49,12 @@ async function findAndConnectProfileLinks(
 		const growLinkLocator = page.getByRole("link");
 		console.log("✅ Getting more suggested profile links...");
 		const growLinkSuggestedConnections = await growLinkLocator.all();
+
+		const maxPixel = 400;
+		for (let i = 0; i < maxPixel; i += 40) {
+			await page.mouse.wheel(0, -1 * i);
+			const additionalGrowLinks = await growLinkLocator.all();
+		}
 
 		const suggestedUrls = await Promise.all(
 			growLinkSuggestedConnections.map(async (locator) => {

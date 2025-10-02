@@ -105,6 +105,10 @@ function escRe(s: string) {
 	return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function checkMoreMenu(page: Page, label: string | RegExp) {
 	const locator = page.getByRole("main");
 	const moreBtn = locator.getByRole("button", { name: "More actions" }).first();
@@ -145,4 +149,6 @@ export {
 	getHashFormOfLink,
 	checkIfSessionStateHasExpired,
 	checkMoreMenu,
+	sleep
 };
+
