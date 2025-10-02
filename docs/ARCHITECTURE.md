@@ -104,7 +104,7 @@ CREATE TABLE
 There is a table for feeds of the currently used scraper profile.
 
 ```sql
-CCREATE TABLE
+CREATE TABLE
     feeds (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
         post_url TEXT NOT NULL,
