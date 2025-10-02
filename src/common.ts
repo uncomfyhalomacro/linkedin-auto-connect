@@ -109,6 +109,10 @@ function sleep(ms: number): Promise<void> {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function throttle(minSec: number, maxSec: number) {
+	await sleep((minSec * 1000) + Math.random() * maxSec * 1000); 
+}
+
 async function checkMoreMenu(page: Page, label: string | RegExp) {
 	const locator = page.getByRole("main");
 	const moreBtn = locator.getByRole("button", { name: "More actions" }).first();
@@ -149,6 +153,7 @@ export {
 	getHashFormOfLink,
 	checkIfSessionStateHasExpired,
 	checkMoreMenu,
-	sleep
+	sleep,
+	throttle
 };
 
