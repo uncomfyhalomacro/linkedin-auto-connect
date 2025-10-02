@@ -70,7 +70,7 @@ essential since we can always update the keys. They are only useful for logging.
 data):
 
 ```sql
-CCREATE TABLE
+CREATE TABLE
     scraper_profiles (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
         secret TEXT NOT NULL,
