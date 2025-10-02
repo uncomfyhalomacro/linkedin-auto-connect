@@ -1,6 +1,3 @@
-# docker-compose version specification
-version: '3.8'
-
 # Define all the services (containers) your application needs
 services:
   # The Node.js application service
