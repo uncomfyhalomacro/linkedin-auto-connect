@@ -43,6 +43,7 @@ const scrapeFeeds = async (page: Page) => {
 	console.log("✅ Found articles: ", postLocators.length);
 
 	for (const postLocator of postLocators) {
+		await postLocator.scrollIntoViewIfNeeded();
 		const controlMenuButton = postLocator
 			.getByRole("button", { name: controlMenuRegex })
 			.first();
