@@ -4,6 +4,7 @@ import {
 	clickFirstVisible,
 	escRe,
 	getHashFormOfLink,
+	throttle,
 } from "./common.ts";
 import { generateDebugInfoPng } from "./debugErrors.ts";
 import ProfileLinks from "./models/ProfileLinks.js";
@@ -88,10 +89,13 @@ async function sendInvite(url: string, page: Page) {
 				.first()
 				.getAttribute("aria-expanded");
 			if (expanded === "false") {
+				await throttle(3, 12);
 				await resInvite.moreBtn.first().click();
 			}
 			console.log("Attempting to invite profile...");
+			await resInvite.hayStackBtn.first().scrollIntoViewIfNeeded();
 			const visible = await resInvite.hayStackBtn.first().isVisible();
+			await throttle(4, 10);
 			if (visible) {
 				console.log("Inviting to connect with current profile");
 				await clickFirstVisible([
@@ -120,6 +124,7 @@ async function sendInvite(url: string, page: Page) {
 
 		// 5) Dialog: click “Send / Send without a note”
 		const dlg = page.getByRole("dialog");
+		await throttle(1, 5);
 		const successInvite = await clickFirstVisible([
 			dlg.getByRole("button", { name: SEND }).first(),
 			dlg.locator(`button:text-matches("${SEND.source}")`).first(),
