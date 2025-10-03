@@ -8,5 +8,18 @@ CREATE TABLE
         connected BOOLEAN DEFAULT false,
         pending BOOLEAN DEFAULT false,
         name TEXT NOT NULL,
+        current_title TEXT,
+        current_company TEXT,
+        current_company_url TEXT,
+        education JSONB[] DEFAULT '{}',
+        experience JSONB[] DEFAULT '{}',
+        volunteering JSONB[] DEFAULT '{}',
+        skills JSONB[] DEFAULT '{}',
+        recommendations JSONB[] DEFAULT '{}',
+        location TEXT,
+        headline TEXT,
+        summary TEXT,
+        notes TEXT,
+        profile_image_url TEXT,
         UNIQUE(member_id_url, clean_profile_url)
     );
