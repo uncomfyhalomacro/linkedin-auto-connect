@@ -29,15 +29,43 @@ const scrapeFeeds = async (page: Page) => {
 		// .locator('div[data-id*="urn:li:activity"]')
 		.all();
 
-	while (postLocators.length === 0) {
+	const footerText = `LinkedIn Corporation ©${new Date().getFullYear()}`;
+	const footerRegex = new RegExp(footerText, "i");
+	const footerLocator = page.getByRole('contentinfo', { name: footerRegex }).first();
+
+	await footerLocator.scrollIntoViewIfNeeded().catch(() => {});
+	await page.waitForLoadState("domcontentloaded").catch(() => {});
+
+	// keep scrolling down until we find some posts
+	// sometimes linkedin takes a while to load the posts
+	// especially on new accounts with no connections
+	// so we will scroll down until we find some posts or reach the footer
+	// if we reach the footer and still no posts, we will stop
+	// and log an error
+	// this is to prevent infinite scrolling
+	// which can lead to memory issues
+	// and also linkedin can block us for too many requests
+	// so we will limit the number of scrolls to 20
+	let scrolls = 0;
+	const maxScrolls = 20;
+	while (postLocators.length === 0 && scrolls < maxScrolls) {
 		const err = "‼️ No post data found!";
 		console.log(err);
 		console.log("Scrolling down more and more");
-		await page.mouse.wheel(0, -30);
+		await page.mouse.wheel(0, -1000);
+		await page.waitForTimeout(2000); // wait for 2 seconds to load more posts
 		postLocators = await page
 			.getByRole("article")
 			// .locator('div[data-id*="urn:li:activity"]')
 			.all();
+		scrolls++;
+	}
+
+	if (scrolls === maxScrolls && postLocators.length === 0) {
+		const err = "‼️ No post data found after maximum scrolls!";
+		console.error(err);
+		await genfeedDebugLogs(page);
+		return;
 	}
 
 	console.log("✅ Found articles: ", postLocators.length);
@@ -47,6 +75,8 @@ const scrapeFeeds = async (page: Page) => {
 		const controlMenuButton = postLocator
 			.getByRole("button", { name: controlMenuRegex })
 			.first();
+
+		await controlMenuButton.scrollIntoViewIfNeeded().catch(() => {});
 
 		// const controlMenuButton = buttons.getByLabel(controlMenuRegex).first()
 		if (await clickFirstVisible([controlMenuButton])) {
