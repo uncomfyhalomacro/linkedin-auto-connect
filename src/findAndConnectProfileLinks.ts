@@ -48,13 +48,37 @@ async function findAndConnectProfileLinks(
 
 		const growLinkLocator = page.getByRole("link");
 		console.log("✅ Getting more suggested profile links...");
-		const growLinkSuggestedConnections = await growLinkLocator.all();
+		let growLinkSuggestedConnections = await growLinkLocator.all();
 
-		const maxPixel = 400;
-		for (let i = 0; i < maxPixel; i += 40) {
-			await page.mouse.wheel(0, -1 * i);
-			const additionalGrowLinks = await growLinkLocator.all();
-			growLinkSuggestedConnections.concat(additionalGrowLinks)
+		const footerText = `LinkedIn Corporation ©${new Date().getFullYear()}`;
+		const footerRegex = new RegExp(footerText, "i");
+		const footerLocator = page
+			.getByRole("contentinfo", { name: footerRegex })
+			.first();
+
+		await footerLocator.scrollIntoViewIfNeeded().catch(() => {});
+		await page.waitForLoadState("domcontentloaded").catch(() => {});
+
+		// keep scrolling down until we find some posts
+		// sometimes linkedin takes a while to load the posts
+		// especially on new accounts with no connections
+		// so we will scroll down until we find some posts or reach the footer
+		// if we reach the footer and still no posts, we will stop
+		// and log an error
+		// this is to prevent infinite scrolling
+		// which can lead to memory issues
+		// and also linkedin can block us for too many requests
+		// so we will limit the number of scrolls to 20
+		let scrolls = 0;
+		const maxScrolls = 20;
+		while (growLinkSuggestedConnections.length === 0 && scrolls < maxScrolls) {
+			const err = "‼️ No post data found!";
+			console.log(err);
+			console.log("Scrolling down more and more");
+			await page.mouse.wheel(0, -1000);
+			await page.waitForTimeout(2000); // wait for 2 seconds to load more posts
+			growLinkSuggestedConnections = await growLinkLocator.all();
+			scrolls++;
 		}
 
 		const suggestedUrls = await Promise.all(
@@ -64,7 +88,9 @@ async function findAndConnectProfileLinks(
 				return new URL(href ?? "", "https://www.linkedin.com").toString();
 			}),
 		);
+		console.log(`✅ Found ${suggestedUrls.length} suggested profile links.`);
 
+		// Combine both arrays of URLs
 		const foundUrls = [...urls, ...suggestedUrls, url];
 
 		// Print the final list of URLs
