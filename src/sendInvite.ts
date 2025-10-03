@@ -90,6 +90,7 @@ async function sendInvite(url: string, page: Page) {
 				.getAttribute("aria-expanded");
 			if (expanded === "false") {
 				await throttle(3, 12);
+				await resInvite.moreBtn.first().scrollIntoViewIfNeeded();
 				await resInvite.moreBtn.first().click();
 			}
 			console.log("Attempting to invite profile...");

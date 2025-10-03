@@ -92,6 +92,7 @@ async function getHashFormOfLink(page: Page, url: string) {
 async function clickFirstVisible(locs: Locator[]): Promise<boolean> {
 	for (const l of locs) {
 		try {
+			await l.scrollIntoViewIfNeeded().catch(() => {});
 			if (await l.isVisible()) {
 				await l.click();
 				return true;
