@@ -2,7 +2,7 @@
 
 This project is an autoconnect tool for LinkedIn profiles.
 
-> [!WARN]
+> [!WARNING]
 > LinkedIn prohibits the use of automation tools or bots. Please use with caution.
 
 ## Prerequisites
