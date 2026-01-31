@@ -1,11 +1,11 @@
 # LinkedIn Auto
 
-## Prerequisites
+This project is an autoconnect tool for LinkedIn profiles.
 
-> [!NOTE]
-> Work in progress. We still have to
-> 1. ~~Pass the `.env` values over e.g. in CI.~~ DONE
-> 2. ~~Store LinkedIn profiles.~~
+> [!WARN]
+> LinkedIn prohibits the use of automation tools or bots. Please use with caution.
+
+## Prerequisites
 
 If you want to use and ensure that the project is working universally, you can use `docker` or `podman`. 
 
